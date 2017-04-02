@@ -1,9 +1,9 @@
-### NC Elections
+# North Carolina Elections Project
 
-Alisa Kwok
+### Contributors
 
-Edwin Alvarado
+- Alisa Kwok
 
-Nick Solomon
+- Edwin Alvarado
 
-i like paul's boots
+- Nick Solomon
