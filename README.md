@@ -3,9 +3,7 @@
 ### Contributors
 
 - Alisa Kwok
-
 - Edwin Alvarado
-
 - Nick Solomon
 
 ## Project Description
