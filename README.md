@@ -19,3 +19,35 @@ Bureau and the Department of Labor. Finally, our findings will be presented
 publicly on the Internet, allowing for anyone who is interested to explore the
 difference between the actual population of North Carolina and the voting
 population.
+
+## Timeline
+
+#### Wednesday, April 5
+SQL database set up
+
+#### Friday, April 7
+CPS data identified, imported
+
+#### Monday, April 10
+All data wrangled, tidied
+
+#### Wednesday, April 12
+Initial visualizations, models made
+
+Work on app started
+
+#### Monday, April 17
+App finished
+
+#### Wednesday, April 19 - Sunday, April 23
+Presentation preparation
+
+#### Wednesday, April 26 - Friday, April 28
+Presentations
+
+#### Wednesday, May 10
+Project submitted
+
+
+
+
