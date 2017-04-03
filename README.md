@@ -26,7 +26,7 @@ population.
 SQL database set up
 
 #### Friday, April 7
-CPS data identified, imported
+CPS / CCES / ANES data identified, imported
 
 #### Monday, April 10
 All data wrangled, tidied
