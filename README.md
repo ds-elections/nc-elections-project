@@ -1,6 +1,6 @@
 # North Carolina Elections Project
 
-### Contributors
+## Contributors
 
 - Alisa Kwok
 - Edwin Alvarado
