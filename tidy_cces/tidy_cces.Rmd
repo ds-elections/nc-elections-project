@@ -1,0 +1,36 @@
+---
+title: "tidy_cces"
+author: "Edwin Alvarado"
+date: "April 9, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r, import data}
+load("C:\\Users\\mexic\\Downloads\\CCES12_Common_VV.RData")
+
+cces_2012 <- x
+
+load("C:\\Users\\mexic\\Downloads\\CCES14_Common_Content_Validated.RData")
+
+cces_2014 <- x
+
+load("C:\\Users\\mexic\\Downloads\\CCES2016_Common_FirstRelease.RData")
+
+cces_2016 <- x
+```
+
+```{r, tidy_2012}
+cces_2012 <- cces_2012 %>%
+  select(1:4, 6:15, faminc, CC317, CC354) %>%
+  filter(inputstate == "North Carolina")
+
+```
+
