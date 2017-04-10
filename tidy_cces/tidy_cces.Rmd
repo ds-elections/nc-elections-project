@@ -47,6 +47,7 @@ cces_2014 <- cces_2014 %>%
 cces_2016 <- cces_2016 %>%
   select(1:10, votereg, votereg_f,
          regzip, inputzip,birthyr,
-         gender, race, hispanic)
+         gender, race, hispanic) %>%
+  filter(inputstate == "North Carolina")
 ```
 
