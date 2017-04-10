@@ -1,0 +1,31 @@
+---
+title: "wrangle / tidy"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+my_db <- src_postgres("nc_elections",
+                      host = "ncelections.c7d0c8vzwwoc.us-west-2.rds.amazonaws.com", 
+                      port = 5432,
+                      user = "nc_elections",
+                      password = "nc_elections")
+nc_vhis <- tbl(my_db, "nc_vhis")
+nc_voter <- tbl(my_db, "nc_voter")
+```
+
+```{r}
+nc <- nc_vhis %>%
+  left_join(nc_voter, by = c("ncid" = "ncid")) %>%
+  filter(status_cd == "A") %>%
+  select(county_desc.x, voter_reg_num, zip_code, race_code:birth_age, precinct_abbrv:precinct_desc, election_lbl, election_desc) %>%
+  rename(county = county_desc.x,
+         precinct = precinct_desc,
+         party_code = party_cd,
+         age = birth_age)
+nc
+```
+
+
