@@ -20,12 +20,18 @@ nc_voter <- tbl(my_db, "nc_voter")
 nc <- nc_vhis %>%
   left_join(nc_voter, by = c("ncid" = "ncid")) %>%
   filter(status_cd == "A") %>%
-  select(county_desc.x, voter_reg_num, zip_code, race_code:birth_age, precinct_abbrv:precinct_desc, election_lbl, election_desc) %>%
+  select(county_desc.x,
+         voter_reg_num,
+         zip_code,
+         race_code:birth_age,
+         precinct_abbrv:precinct_desc,
+         election_lbl,
+         election_desc) %>%
   rename(county = county_desc.x,
          precinct = precinct_desc,
          party_code = party_cd,
-         age = birth_age)
-nc
+         age = birth_age) %>%
+  mutate(election_lbl = to_date(election_lbl, "MM/DD/YYYY"))
 ```
 
 
