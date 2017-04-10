@@ -29,8 +29,14 @@ cces_2016 <- x
 
 ```{r, tidy_2012}
 cces_2012 <- cces_2012 %>%
-  select(1:4, 6:15, faminc, CC317, CC354) %>%
+  select(1:4, 6:15, faminc, CC316, CC317) %>%
   filter(inputstate == "North Carolina")
 
+```
+
+```{r, tidy_2014}
+cces_2014 <- cces_2014 %>%
+  select(1:6, birthyr, gender, educ, race, hispanic, votereg, votereg_f, inputstate, faminc, CC14_316, CC14_317) %>%
+  filter(inputstate == "North Carolina")
 ```
 
