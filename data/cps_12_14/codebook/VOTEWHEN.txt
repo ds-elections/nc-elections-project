@@ -1,0 +1,6 @@
+01      On election day
+02      Before election day
+96      Refused
+97      Don't know
+98      No Response
+99      NIU

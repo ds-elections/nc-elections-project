@@ -1,0 +1,13 @@
+01      Did not meet registration deadlines
+02      Did not know where or how to register
+03      Did not meet residency requirements/did not live here long enough
+04      Permanent illness or disability
+05      Difficulty with English
+06      Not interested in the election or not involved in politics
+07      My vote would not make a difference
+08      Not eligible to vote
+09      Other reason
+96      Refused
+97      Don't know
+98      No Response
+99      NIU

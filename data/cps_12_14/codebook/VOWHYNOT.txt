@@ -1,0 +1,15 @@
+01      Illness or disability (own or family's)
+02      Out of town or away from home
+03      Forgot to vote (or send in absentee ballot)
+04      Not interested, felt my vote wouldn't make a difference
+05      Too busy, conflicting work or school schedule
+06      Transportation problems
+07      Didn't like candidates or campaign issues
+08      Registration problems (i.e., didn't receive absentee ballot, not registered in current location)
+09      Bad weather conditions
+10      Inconvenient polling place or hours or lines too long
+11      Other
+96      Refused
+97      Don't know
+98      No Response
+99      NIU

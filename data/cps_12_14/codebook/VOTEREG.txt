@@ -1,0 +1,5 @@
+00      Did not register
+01      Registered, did not vote
+02      Voted
+98      Don't know, refused, no response
+99      NIU

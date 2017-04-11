@@ -1,0 +1,29 @@
+100     White
+200     Black/Negro
+300     American Indian/Aleut/Eskimo
+650     Asian or Pacific Islander
+651     Asian only
+652     Hawaiian/Pacific Islander only
+700     Other (single) race, n.e.c.
+801     White-Black
+802     White-American Indian
+803     White-Asian
+804     White-Hawaiian/Pacific Islander
+805     Black-American Indian
+806     Black-Asian
+807     Black-Hawaiian/Pacific Islander
+808     American Indian-Asian
+809     Asian-Hawaiian/Pacific Islander
+810     White-Black-American Indian
+811     White-Black-Asian
+812     White-American Indian-Asian
+813     White-Asian-Hawaiian/Pacific Islander
+814     White-Black-American Indian-Asian
+815     American Indian-Hawaiian/Pacific Islander
+816     White-Black--Hawaiian/Pacific Islander
+817     White-American Indian-Hawaiian/Pacific Islander
+818     Black-American Indian-Asian
+819     White-American Indian-Asian-Hawaiian/Pacific Islander
+820     Two or three races, unspecified
+830     Four or five races, unspecified
+999     Blank

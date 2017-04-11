@@ -1,0 +1,13 @@
+01      At a department of motor vehicles
+02      At a public assistance agency
+03      Registered by mail
+04      At a school, hospital, or on campus
+05      Went to a town hall or county/government registration office
+06      Filled out form at a registration drive
+07      Registered at polling place
+08      Registered using the Internet or online
+09      Other
+96      Refused
+97      Don't know
+98      No Response
+99      NIU

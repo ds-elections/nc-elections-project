@@ -1,0 +1,11 @@
+01      Less than 1 month
+02      1-6 months
+03      7-11 months
+04      Less than 1 year
+05      1-2 years
+06      3-4 years
+07      6 years or longer
+96      Refused
+97      Don't know
+98      No Response
+99      NIU

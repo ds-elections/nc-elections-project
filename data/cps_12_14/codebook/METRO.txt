@@ -1,0 +1,6 @@
+0       Not identifiable
+1       Not in metro area
+2       Central city
+3       Outside central city
+4       Central city status unknown
+9       Missing/Unknown

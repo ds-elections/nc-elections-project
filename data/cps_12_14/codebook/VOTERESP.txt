@@ -1,0 +1,3 @@
+01      Self
+02      Proxy
+09      NIU

@@ -1,0 +1,8 @@
+1       Married, spouse present
+2       Married, spouse absent
+3       Separated
+4       Divorced
+5       Widowed
+6       Never married/single
+7       Widowed or Divorced
+9       NIU

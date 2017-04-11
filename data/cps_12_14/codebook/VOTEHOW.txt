@@ -1,0 +1,6 @@
+01      In person
+02      By mail
+97      Don't know
+96      Refused
+98      No Response
+99      NIU
