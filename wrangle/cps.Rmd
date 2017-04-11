@@ -2,3 +2,38 @@
 title: "Wrangle CPS"
 output: github_document
 ---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+cps <- read_csv("../data/cps_12_14/cps_12_14.csv")
+
+codebook <- list()
+for (name in names(cps)){ 
+  codebook[[name]] <- read_table(paste("../data/cps_12_14/codebook/",
+                                       name, ".txt", sep = ""), 
+                                 col_names = c("code", "value"),
+                                 col_types = "ic"
+                                 ) %>% 
+    mutate(value = ifelse(value == "NIU", NA, value))
+}
+
+
+
+recode <- function(code, code_book){
+  if(is.na(code_book[[1,1]])) return(code)
+  out_row <- which(code_book[,1] == code)
+  if(length(out_row) != 1){
+    out <- code
+  } else out <- code_book[[out_row, 2]]
+  out
+}
+
+for(name in names(codebook)){
+  cps[[name]] <- map_chr(cps[[name]], ~ recode(.x, codebook[[name]]))
+}
+```
+
+
