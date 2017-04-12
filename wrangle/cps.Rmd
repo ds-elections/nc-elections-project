@@ -8,11 +8,11 @@ library(tidyverse)
 ```
 
 ```{r}
-cps <- read_csv("../data/cps_12_14/cps_12_14.csv")
+cps <- read_csv("data/cps_12_14/cps_12_14.csv")
 
 codebook <- list()
 for (name in names(cps)){ 
-  codebook[[name]] <- read_table(paste("../data/cps_12_14/codebook/",
+  codebook[[name]] <- read_table(paste("data/cps_12_14/codebook/",
                                        name, ".txt", sep = ""), 
                                  col_names = c("code", "value"),
                                  col_types = "ic"
