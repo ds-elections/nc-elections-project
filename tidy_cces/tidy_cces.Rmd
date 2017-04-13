@@ -9,11 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r load_packages}
 library(tidyverse)
 ```
 
-```{r, import data}
+```{r, import_data}
 load("data/cces/CCES12_Common_VV.RData")
 
 cces_2012 <- x
