@@ -9,10 +9,27 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(knitr)
+```
 
-```{r, Initial Race Viz}
-cces_2012_1 <- cces_2012 %>%
-  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
+```{r, load data}
+if(!dir.exists("viz/temp")) dir.create("viz/temp")
+purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
+purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
+purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
+```
 
 
+```{r, 2012}
+#this changes people who answered yes to hispanic, to hispanic in race column
+cces_2012 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race)) %>%
+  ggplot(aes(x = race)) +
+  geom_bar()
+
+cces_2012_1 %>%
+  group_by(race, hispanic) %>%
+  summarize(count_hispanic = n())
 ```
