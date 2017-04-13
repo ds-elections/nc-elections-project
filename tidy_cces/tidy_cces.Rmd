@@ -14,17 +14,18 @@ library(tidyverse)
 ```
 
 ```{r, import data}
-load("C:\\Users\\mexic\\Downloads\\CCES12_Common_VV.RData")
+load("data/cces/CCES12_Common_VV.RData")
 
 cces_2012 <- x
 
-load("C:\\Users\\mexic\\Downloads\\CCES14_Common_Content_Validated.RData")
+load("data/cces/CCES14_Common_Content_Validated.RData")
 
 cces_2014 <- x
 
-load("C:\\Users\\mexic\\Downloads\\CCES2016_Common_FirstRelease.RData")
+load("data/cces/CCES2016_Common_FirstRelease.RData")
 
 cces_2016 <- x
+rm(x)
 ```
 
 ```{r, tidy_2012}
