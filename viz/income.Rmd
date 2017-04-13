@@ -3,14 +3,47 @@ title: "Income"
 output: github_document
 ---
 
-```{r}
+```{r load_packages}
 library(tidyverse)
 library(knitr)
+opts_knit$set(root.dir = normalizePath("../"))
 ```
 
-```{r}
-purl("wrangle/cps.Rmd", output = "viz/cps.R") %>% source()
-purl("wrangle/nc_wrangle.Rmd", output = "viz/nc.R") %>% source()
-purl("tidy_cces/tidy_cces.Rmd", output = "viz/cces.R") %>% source()
+```{r load_data include = FALSE}
+knit("wrangle/cps.Rmd")
+knit("wrangle/nc_wrangle.Rmd")
+knit("tidy_cces/tidy_cces.Rmd")
 ```
+
+```{r cps}
+ggplot(cps, aes(FAMINC)) +
+  stat_count() +
+  facet_wrap(~YEAR) +
+  theme_bw() +
+  labs(title = "CPS reported family income",
+       x = "Family income",
+       y = "Count")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
+```{r cces}
+ggplot(cces_2012, aes(faminc)) +
+  stat_count() +
+  #facet_wrap(~YEAR) +
+  theme_bw() +
+  labs(title = "CCES reported family income (2012)",
+       x = "Family income",
+       y = "Count")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+ggplot(cces_2014, aes(faminc)) +
+  stat_count() +
+  #facet_wrap(~YEAR) +
+  theme_bw() +
+  labs(title = "CCES reported family income (2014)",
+       x = "Family income",
+       y = "Count")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
 
