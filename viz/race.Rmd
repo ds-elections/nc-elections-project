@@ -1,0 +1,18 @@
+---
+title: "race_viz"
+author: "Edwin Alvarado"
+date: "April 13, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, Initial Race Viz}
+cces_2012_1 <- cces_2012 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
+
+
+```
