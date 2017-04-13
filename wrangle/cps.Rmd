@@ -34,6 +34,9 @@ recode <- function(code, code_book){
 for(name in names(codebook)){
   cps[[name]] <- map_chr(cps[[name]], ~ recode(.x, codebook[[name]]))
 }
+
+rm(codebook, recode, name)
+
 ```
 
 
