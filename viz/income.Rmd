@@ -1,0 +1,16 @@
+---
+title: "Income"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+```
+
+```{r}
+purl("wrangle/cps.Rmd", output = "viz/cps.R") %>% source()
+purl("wrangle/nc_wrangle.Rmd", output = "viz/nc.R") %>% source()
+purl("tidy_cces/tidy_cces.Rmd", output = "viz/cces.R") %>% source()
+```
+
