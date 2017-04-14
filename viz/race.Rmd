@@ -36,7 +36,7 @@ cps %>%
   group_by(RACE) %>%
   summarize(count = n())
 
-#change race to hispanic
+#change race to hispanic / also converts back to 1,2,3 etc instead of White, Black etc
 cps <- cps %>%
   mutate(RACE = ifelse(HISPAN == "Hispanic", yes = "Hispanic", no = RACE))
 
