@@ -22,8 +22,12 @@ purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
+```{r, nc server}
+
+```
+
 ```{r, tidy cps for viz}
-cps$RACE <- as.factor(cps$RACE)
+
 cps$HISPAN <- as.factor(cps$HISPAN)
 cps$HISPAN <- fct_other(cps$HISPAN, keep = "Not Hispanic", other_level = "Hispanic")
 
@@ -51,6 +55,8 @@ cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Esk
                        Mixed = "White-Asian",
                        Mixed = "White-Black",
                        Mixed = "White-Black-American Indian")
+ggplot(cps, aes(x = RACE)) +
+  geom_bar()
 ```
 
 ```{r, tidy cces for viz}
@@ -94,6 +100,17 @@ cces_2016$race <- fct_recode(cces_2016$race, White = "1",
                              Other = "8")
 ```
 
+```{r, nc}
+nc %>%
+  group_by(ethnic_code) %>%
+  summarize(count = n())
+
+nc <- nc %>%
+  select(race_code, ethnic_code) %>%
+  filter
+  
+```
+
 ```{r, test questions?}
 #losing 3 in race
 cces_2012 %>%
@@ -109,6 +126,8 @@ cces_2012 %>%
 ```{r, 2012 viz}
 ggplot(cces_2012, aes(x = race)) +
   geom_bar()
+
+
 ```
 
 ```{r, 2014}
