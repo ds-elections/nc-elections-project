@@ -1,0 +1,40 @@
+---
+title: "Age / Gender"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+```
+
+```{r, load data}
+if(!dir.exists("viz/temp")) dir.create("viz/temp")
+purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
+purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
+purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
+```
+
+```{r}
+# AGE, 2012
+
+lcolors <- c("cps" = "black", "cces" = "blue", "nc" = "purple")
+
+cps_2012 <- cps %>%
+  filter(YEAR == "2012") %>%
+  mutate(AGE = as.numeric(AGE, na.rm = TRUE))
+
+cces_2012 %>%
+  mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
+         age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2012")), "years")) %>%
+  ggplot(aes(x = age)) +
+  geom_density(aes(color = "cces")) +
+  geom_density(data = cps_2012, aes(x = AGE, color = "cps")) +
+  scale_color_manual(name = "Dataset", values = lcolors) +
+  labs(title = "2012 NC age distributions reported by CCES and CPS", x = "Age", y = "Density")
+```
+
+
+
