@@ -1,0 +1,17 @@
+000     Not Hispanic
+100     Mexican
+102     Mexican American
+103     Mexicano/Mexicana
+104     Chicano/Chicana
+108     Mexican (Mexicano)
+109     Mexicano/Chicano
+200     Puerto Rican
+300     Cuban
+400     Dominican
+500     Salvadoran
+401     Other Hispanic
+410     Central/South American
+411     Central American, (excluding Salvadoran)
+412     South American
+901     Do not know
+902     NA

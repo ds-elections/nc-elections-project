@@ -1,4 +1,4 @@
-Description: Revision of 00001
+Description: Revision of (Revision of (Revision of 00001))
 Samples selected:
       IPUMS-CPS, November 2012                          regular
       IPUMS-CPS, November 2014                          regular
@@ -19,14 +19,15 @@ Case Selection:               Yes
   SEX                P  32              1      X       X 
   RACE               P  33-35           3      X       X 
   MARST              P  36              1      X       X 
-  VOTEREG            P  37-38           2      X       X 
-  VOWHYNOT           P  39-40           2      X       X 
-  VOYNOTREG          P  41-42           2      X       X 
-  VOTEHOW            P  43-44           2      X       X 
-  VOTEWHEN           P  45-46           2      X       X 
-  VOREGHOW           P  47-48           2      X       X 
-  VOTERES            P  49-50           2      X       X 
-  VOTERESP           P  51-52           2      X       X 
+  HISPAN             P  37-39           3      X       X 
+  VOTEREG            P  40-41           2      X       X 
+  VOWHYNOT           P  42-43           2      X       X 
+  VOYNOTREG          P  44-45           2      X       X 
+  VOTEHOW            P  46-47           2      X       X 
+  VOTEWHEN           P  48-49           2      X       X 
+  VOREGHOW           P  50-51           2      X       X 
+  VOTERES            P  52-53           2      X       X 
+  VOTERESP           P  54-55           2      X       X 
 
 Variable Availability Key:
 All Years X - available in this sample
@@ -897,6 +898,26 @@ H STATEFIP      37 North Carolina
 6		Never married/single
 7		Widowed or Divorced
 9		NIU
+
+ HISPAN		Hispanic origin
+000		Not Hispanic
+100		Mexican
+102		Mexican American
+103		Mexicano/Mexicana
+104		Chicano/Chicana
+108		Mexican (Mexicano)
+109		Mexicano/Chicano
+200		Puerto Rican
+300		Cuban
+400		Dominican
+500		Salvadoran
+		Other Spanish:
+401		Other Hispanic
+410		Central/South American
+411		Central American, (excluding Salvadoran)
+412		South American
+901		Do not know
+902		N/A (and no response 1985-87)
 
  VOTEREG		Voted or registered for most recent November election
 00		Did not register
