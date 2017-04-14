@@ -1,0 +1,35 @@
+---
+title: "Age / Gender"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+```
+
+```{r}
+if(!dir.exists("viz/temp")) dir.create("viz/temp")
+purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
+purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
+purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
+```
+
+### Age (2012)
+
+```{r}
+cps %>%
+  filter(YEAR == "2012") %>%
+  mutate(AGE = as.numeric(AGE, na.rm = TRUE)) %>%
+  ggplot(aes(x = AGE)) +
+  geom_density()
+
+cces_2012 %>%
+  mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
+         age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2012")), "years")) %>%
+  ggplot(aes(x = age)) +
+  geom_density()
+```
+
