@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(knitr)
+library(forcats)
 ```
 
 ```{r, load data}
@@ -19,6 +20,14 @@ if(!dir.exists("viz/temp")) dir.create("viz/temp")
 purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
 purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
+```
+
+```{r, tidy cps for viz}
+cps$RACE <- as.factor(cps$RACE)
+cps$HISPAN <- as.factor(cps$HISPAN)
+
+
+cps$HISPAN <- fct_other(cps$HISPAN, keep = "Not Hispanic", other_level = "Hispanic")
 ```
 
 ```{r, test questions?}
@@ -35,12 +44,23 @@ cces_2012 %>%
 
 ```{r, 2012}
 #this changes people who answered yes to hispanic, to hispanic in race column
-cces_2012 %>%
-  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race)) %>%
-  ggplot(aes(x = race)) +
-  geom_bar()
+cces_2012 <- cces_2012 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
+  
+cces_2012$race <- as.factor(cces_2012$race)
+cces_2012$race <- fct_recode(cces_2012$race, White = "1",
+                             Black = "2",
+                             Asian = "4",
+                             `Native American` = "5",
+                             Mixed = "6",
+                             Other = "7")
+#5 extra people
+group_by(race) %>%
+  summarize(count = n())
+  
 
-cps$RACE <- as.factor(cps$RACE)
+ggplot(cces_2012, aes(x = race)) +
+  geom_bar()
 
 ```
 
