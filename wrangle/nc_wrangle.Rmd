@@ -16,7 +16,7 @@ nc_vhis <- tbl(my_db, "nc_vhis")
 nc_voter <- tbl(my_db, "nc_voter")
 ```
 
-```{r}
+```{r nc_wrangle}
 nc <- nc_vhis %>%
   left_join(nc_voter, by = c("ncid" = "ncid")) %>%
   filter(status_cd == "A") %>%
