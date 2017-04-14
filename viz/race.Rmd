@@ -21,6 +21,17 @@ purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
+```{r, test questions?}
+#losing 3 in race
+cces_2012 %>%
+  filter(hispanic == "Yes") %>%
+  group_by(race, hispanic) %>%
+  summarize(count_hispanic = n())
+
+cces_2012 %>%
+  group_by(race) %>%
+  summarize(count_hispanic = n())
+```
 
 ```{r, 2012}
 #this changes people who answered yes to hispanic, to hispanic in race column
@@ -29,7 +40,21 @@ cces_2012 %>%
   ggplot(aes(x = race)) +
   geom_bar()
 
-cces_2012_1 %>%
-  group_by(race, hispanic) %>%
-  summarize(count_hispanic = n())
+cps$RACE <- as.factor(cps$RACE)
+
 ```
+
+```{r, 2014}
+cces_2014 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race)) %>%
+  ggplot(aes(x = race)) +
+  geom_bar()
+```
+
+```{r, 2016}
+cces_2016 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race)) %>%
+  ggplot(aes(x = race)) +
+  geom_bar()
+```
+
