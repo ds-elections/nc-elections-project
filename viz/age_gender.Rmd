@@ -20,16 +20,19 @@ purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ### Age (2012)
 
 ```{r}
-cps %>%
+lcolors <- c("cps" = "black", "cces" = "blue", "nc" = "red")
+
+cps_2012 <- cps %>%
   filter(YEAR == "2012") %>%
-  mutate(AGE = as.numeric(AGE, na.rm = TRUE)) %>%
-  ggplot(aes(x = AGE)) +
-  geom_density()
+  mutate(AGE = as.numeric(AGE, na.rm = TRUE))
 
 cces_2012 %>%
   mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
          age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2012")), "years")) %>%
   ggplot(aes(x = age)) +
-  geom_density()
+  geom_density(aes(color = "cces")) +
+  geom_density(data = cps_2012, aes(x = AGE, color = "cps")) +
+  scale_color_manual(name = "Dataset", values = lcolors)
+
 ```
 
