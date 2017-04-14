@@ -71,12 +71,26 @@ cces_2014 <- cces_2014 %>%
   mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
   
 cces_2014$race <- as.factor(cces_2014$race)
-cces_2012$race <- fct_recode(cces_2012$race, White = "1",
+cces_2014$race <- fct_recode(cces_2014$race, White = "1",
                              Black = "2",
                              Asian = "4",
                              `Native American` = "5",
                              Mixed = "6",
-                             Other = "7")
+                             Other = "7",
+                             Other = "8")
+
+#2016
+cces_2016 <- cces_2016 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
+  
+cces_2016$race <- as.factor(cces_2016$race)
+cces_2016$race <- fct_recode(cces_2016$race, White = "1",
+                             Black = "2",
+                             Asian = "4",
+                             `Native American` = "5",
+                             Mixed = "6",
+                             Other = "7",
+                             Other = "8")
 ```
 
 ```{r, test questions?}
@@ -91,7 +105,7 @@ cces_2012 %>%
   summarize(count = n())
 ```
 
-```{r, 2012}
+```{r, 2012 viz}
 #5 extra people
 cces_2012 %>%
 group_by(race) %>%
@@ -104,16 +118,12 @@ ggplot(cces_2012, aes(x = race)) +
 ```
 
 ```{r, 2014}
-cces_2014 %>%
-  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race)) %>%
-  ggplot(aes(x = race)) +
+ggplot(cces_2014, aes(x = race)) +
   geom_bar()
 ```
 
 ```{r, 2016}
-cces_2016 %>%
-  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race)) %>%
-  ggplot(aes(x = race)) +
+ggplot(cces_2016, aes(x = race)) +
   geom_bar()
 ```
 
