@@ -23,10 +23,24 @@ purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
 ```{r, tidy cps for viz}
-cps$RACE <- as.factor(cps$RACE)
 cps$HISPAN <- as.factor(cps$HISPAN)
-
 cps$HISPAN <- fct_other(cps$HISPAN, keep = "Not Hispanic", other_level = "Hispanic")
+
+#see cases that are hispanic
+cps%>%
+  filter(HISPAN == "Hispanic") %>%
+  group_by(RACE, HISPAN) %>%
+  summarize(count = n())
+
+cps %>%
+  group_by(RACE) %>%
+  summarize(count = n())
+
+#change race to hispanic
+cps <- cps %>%
+  mutate(RACE = ifelse(HISPAN == "Hispanic", yes = "Hispanic", no = RACE))
+
+cps$RACE <- as.factor(cps$RACE)
 cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Eskimo",
                        Asian = "Asian only",
                        Black = "Black American Indian",
@@ -38,11 +52,31 @@ cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Esk
                        Mixed = "White-Black",
                        Mixed = "White-Black-American Indian",
                        Mixed = "White-Black-Asian")
+```
 
-cps%>%
-  filter(HISPAN == "Hispanic") %>%
-  group_by(RACE, HISPAN) %>%
-  summarize(count = n())
+```{r, tidy cces for viz}
+#this changes people who answered yes to hispanic, to hispanic in race column
+cces_2012 <- cces_2012 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
+  
+cces_2012$race <- as.factor(cces_2012$race)
+cces_2012$race <- fct_recode(cces_2012$race, White = "1",
+                             Black = "2",
+                             Asian = "4",
+                             `Native American` = "5",
+                             Mixed = "6",
+                             Other = "7")
+#2014
+cces_2014 <- cces_2014 %>%
+  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
+  
+cces_2014$race <- as.factor(cces_2014$race)
+cces_2012$race <- fct_recode(cces_2012$race, White = "1",
+                             Black = "2",
+                             Asian = "4",
+                             `Native American` = "5",
+                             Mixed = "6",
+                             Other = "7")
 ```
 
 ```{r, test questions?}
@@ -58,17 +92,6 @@ cces_2012 %>%
 ```
 
 ```{r, 2012}
-#this changes people who answered yes to hispanic, to hispanic in race column
-cces_2012 <- cces_2012 %>%
-  mutate(race = ifelse(hispanic == "Yes", yes = "Hispanic", no = race))
-  
-cces_2012$race <- as.factor(cces_2012$race)
-cces_2012$race <- fct_recode(cces_2012$race, White = "1",
-                             Black = "2",
-                             Asian = "4",
-                             `Native American` = "5",
-                             Mixed = "6",
-                             Other = "7")
 #5 extra people
 cces_2012 %>%
 group_by(race) %>%
