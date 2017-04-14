@@ -26,8 +26,23 @@ purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 cps$RACE <- as.factor(cps$RACE)
 cps$HISPAN <- as.factor(cps$HISPAN)
 
-
 cps$HISPAN <- fct_other(cps$HISPAN, keep = "Not Hispanic", other_level = "Hispanic")
+cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Eskimo",
+                       Asian = "Asian only",
+                       Black = "Black American Indian",
+                       Mixed = "Black-Asian",
+                       Black = "Black/Negro",
+                       Other = "Hawaiian/Pacific Islander only",
+                       `Native American` = "White-American Indian",
+                       Mixed = "White-Asian",
+                       Mixed = "White-Black",
+                       Mixed = "White-Black-American Indian",
+                       Mixed = "White-Black-Asian")
+
+cps%>%
+  filter(HISPAN == "Hispanic") %>%
+  group_by(RACE, HISPAN) %>%
+  summarize(count = n())
 ```
 
 ```{r, test questions?}
@@ -39,7 +54,7 @@ cces_2012 %>%
 
 cces_2012 %>%
   group_by(race) %>%
-  summarize(count_hispanic = n())
+  summarize(count = n())
 ```
 
 ```{r, 2012}
@@ -55,6 +70,7 @@ cces_2012$race <- fct_recode(cces_2012$race, White = "1",
                              Mixed = "6",
                              Other = "7")
 #5 extra people
+cces_2012 %>%
 group_by(race) %>%
   summarize(count = n())
   
