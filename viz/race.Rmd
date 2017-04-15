@@ -32,13 +32,12 @@ cps$HISPAN <- fct_other(cps$HISPAN, keep = "Not Hispanic", other_level = "Hispan
 
 #see cases that are hispanic
 cps%>%
-  filter(HISPAN == "Hispanic") %>%
   group_by(RACE, HISPAN) %>%
   summarize(count = n())
 
 #change race to hispanic / also converts back to 1,2,3 etc instead of White, Black etc
 cps <- cps %>%
-  mutate(RACE = ifelse(HISPAN == "Hispanic" | RACE == "Hispanic", yes = "Hispanic", no = RACE))
+  mutate(RACE = if_else(HISPAN == "Hispanic", true = "Hispanic", false = RACE, missing = RACE))
 
 cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Eskimo",
                        Asian = "Asian only",
@@ -56,6 +55,11 @@ ggplot(cps, aes(x = RACE)) +
 
 ```{r, tidy cces for viz}
 #this changes people who answered yes to hispanic, to hispanic in race column
+code_hisp <- function(x,y){
+  if(is.na(y))
+    ifelse
+     return(x)}
+
 cces_2012 <- cces_2012 %>%
   mutate(race = ifelse(hispanic == "Yes" | race == "Hispanic", "Hispanic", race))
 
