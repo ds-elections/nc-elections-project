@@ -1,0 +1,5 @@
+0       Natural born citizen
+1       Born abroad of American parents
+2       Naturalized citizen
+3       Not a citizen
+9       Natural born citizen

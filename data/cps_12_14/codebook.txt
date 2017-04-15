@@ -1,4 +1,4 @@
-Description: Revision of (Revision of (Revision of 00001))
+Description: Revision of (Revision of (Revision of (Revision of 00001)))
 Samples selected:
       IPUMS-CPS, November 2012                          regular
       IPUMS-CPS, November 2014                          regular
@@ -15,19 +15,22 @@ Case Selection:               Yes
   METFIPS            H  21-25           5      X       X 
   INDIVIDCC          H  26              1      X       X 
   FAMINC             H  27-29           3      X       X 
-  AGE                P  30-31           2      X       X 
-  SEX                P  32              1      X       X 
-  RACE               P  33-35           3      X       X 
-  MARST              P  36              1      X       X 
-  HISPAN             P  37-39           3      X       X 
-  VOTEREG            P  40-41           2      X       X 
-  VOWHYNOT           P  42-43           2      X       X 
-  VOYNOTREG          P  44-45           2      X       X 
-  VOTEHOW            P  46-47           2      X       X 
-  VOTEWHEN           P  48-49           2      X       X 
-  VOREGHOW           P  50-51           2      X       X 
-  VOTERES            P  52-53           2      X       X 
-  VOTERESP           P  54-55           2      X       X 
+  PERNUM             P  30-31           2      X       X 
+  WTFINL             P  32-45          14      X       X 
+  AGE                P  46-47           2      X       X 
+  SEX                P  48              1      X       X 
+  RACE               P  49-51           3      X       X 
+  MARST              P  52              1      X       X 
+  CITIZEN            P  53              1      X       X 
+  HISPAN             P  54-56           3      X       X 
+  VOTEREG            P  57-58           2      X       X 
+  VOWHYNOT           P  59-60           2      X       X 
+  VOYNOTREG          P  61-62           2      X       X 
+  VOTEHOW            P  63-64           2      X       X 
+  VOTEWHEN           P  65-66           2      X       X 
+  VOREGHOW           P  67-68           2      X       X 
+  VOTERES            P  69-70           2      X       X 
+  VOTERESP           P  71-72           2      X       X 
 
 Variable Availability Key:
 All Years X - available in this sample
@@ -897,6 +900,13 @@ H STATEFIP      37 North Carolina
 5		Widowed
 6		Never married/single
 7		Widowed or Divorced
+9		NIU
+
+ CITIZEN		Citizenship status
+0		NIU
+1		Born abroad of American parents
+2		Naturalized citizen
+3		Not a citizen
 9		NIU
 
  HISPAN		Hispanic origin
