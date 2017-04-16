@@ -24,6 +24,13 @@ purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 
 ```{r, nc server}
 
+my_db <- src_postgres("nc_elections",
+                      host = "ncelections.c7d0c8vzwwoc.us-west-2.rds.amazonaws.com", 
+                      port = 5432,
+                      user = "nc_elections",
+                      password = "nc_elections")
+nc_vhis <- tbl(my_db, "nc_vhis")
+nc_voter <- tbl(my_db, "nc_voter")
 ```
 
 ```{r, tidy cps for viz}
@@ -49,54 +56,30 @@ cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Esk
                        Mixed = "White-Asian",
                        Mixed = "White-Black",
                        Mixed = "White-Black-American Indian")
-ggplot(cps, aes(x = RACE)) +
-  geom_bar()
 ```
 
 ```{r, tidy cces for viz}
 #this changes people who answered yes to hispanic, to hispanic in race column
-code_hisp <- function(x,y){
-  if(is.na(y))
-    ifelse
-     return(x)}
-
+cces_2012$race <- as.character(cces_2012$race)
 cces_2012 <- cces_2012 %>%
-  mutate(race = ifelse(hispanic == "Yes" | race == "Hispanic", "Hispanic", race))
+  mutate(race = if_else(hispanic == "Yes", true = "Hispanic", 
+                        false = race, missing = race))
 
-cces_2012$hispanic <- as.factor(cces_2012$hispanic)  
-cces_2012$race <- as.factor(cces_2012$race)
-cces_2012$race <- fct_recode(cces_2012$race, White = "1",
-                             Black = "2",
-                             Asian = "4",
-                             `Native American` = "5",
-                             Mixed = "6",
-                             Other = "7")
 
 #2014
+cces_2014$race <- as.character(cces_2014$race)
 cces_2014 <- cces_2014 %>%
-  mutate(race = ifelse(hispanic == "Yes" | race == "Hispanic", yes = "Hispanic", no = race))
+  mutate(race = if_else(hispanic == "Yes", true = "Hispanic", 
+                        false = race, missing = race))
   
-cces_2014$race <- as.factor(cces_2014$race)
-cces_2014$race <- fct_recode(cces_2014$race, White = "1",
-                             Black = "2",
-                             Asian = "4",
-                             `Native American` = "5",
-                             Mixed = "6",
-                             Other = "7",
-                             Other = "8")
+cces_2014$race <- fct_recode(cces_2014$race, Other = "Middle Eastern")
 
 #2016
+cces_2016$race <- as.character(cces_2016$race)
 cces_2016 <- cces_2016 %>%
-  mutate(race = ifelse(hispanic == "Yes" | race == "Hispanic", yes = "Hispanic", no = race))
+  mutate(race = if_else(hispanic == "Yes", true = "Hispanic", false = race, missing = race))
   
-cces_2016$race <- as.factor(cces_2016$race)
-cces_2016$race <- fct_recode(cces_2016$race, White = "1",
-                             Black = "2",
-                             Asian = "4",
-                             `Native American` = "5",
-                             Mixed = "6",
-                             Other = "7",
-                             Other = "8")
+cces_2016$race <- fct_recode(cces_2016$race, Other = "Middle Eastern")
 ```
 
 ```{r, nc}
@@ -110,27 +93,25 @@ nc <- nc %>%
   
 ```
 
-```{r, test questions?}
-#losing 3 in race
-cces_2012 %>%
-  filter(hispanic == "Yes") %>%
-  group_by(race, hispanic) %>%
-  summarize(count_hispanic = n())
-
-cces_2012 %>%
-  group_by(race) %>%
-  summarize(count = n())
-```
-
 ```{r, 2012 viz}
-ggplot(cces_2012, aes(x = race)) +
+cces_2012 %>%
+  mutate(race1 = )
+  ggplot(aes(x = race)) +
   geom_bar()
 
-
+cps %>%
+  filter(YEAR == 2012) %>%
+  ggplot(aes(x = RACE)) +
+  geom_bar()
 ```
 
 ```{r, 2014}
 ggplot(cces_2014, aes(x = race)) +
+  geom_bar()
+
+cps %>%
+  filter(YEAR == 2014) %>%
+  ggplot(aes(x = RACE)) +
   geom_bar()
 ```
 
