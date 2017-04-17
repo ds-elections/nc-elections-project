@@ -93,10 +93,10 @@ nc %>%
   group_by(race_code, ethnic_code) %>%
   summarize(count = n())
 
-nc <- nc %>%
+nc <-nc %>%
   select(race_code, ethnic_code) %>%
-  filter(!is.na(race_code), race_code = "U") %>%
-  
+  filter(!is.na(race_code), race_code != "U") %>%
+  collect(n = Inf)
   
 ```
 
@@ -125,4 +125,3 @@ cps %>%
 ggplot(cces_2016_viz, aes(x = race)) +
   geom_bar()
 ```
-
