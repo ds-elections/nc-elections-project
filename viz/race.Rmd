@@ -128,38 +128,33 @@ nc_race <- nc %>%
   filter(!is.na(race_code), 
          race_code != "U",
          !is.na(ethnic_code),
-                age < 122)) %>%
+                age < 122) %>%
   select(race_code, ethnic_code, age) %>%
   collect(n = Inf)
 
 nc_race <- mutate(nc_race, race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
-                        false = race_code, missing = race_code)
+                        false = race_code, missing = race_code))
 ```
 
 ```{r, 2012 viz}
-full_data <- rbind()
+full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, cps_2014_viz)
 
-cces_2012_viz %>%
-  ggplot(aes(x = race)) +
-  geom_bar()
-
-cps_2012_viz %>%
-  filter(YEAR == 2012) %>%
-  ggplot(aes(x = RACE)) +
-  geom_bar()
+full_data %>%
+  filter(source %in% c("cces2012", "cps2012")) %>%
+  ggplot(aes(x = race, color = source)) +
+  geom_bar(position = "dodge")
 ```
 
 ```{r, 2014}
-ggplot(cces_2014_viz, aes(x = race)) +
-  geom_bar()
-
-cps_2014_viz %>%
-  filter(YEAR == 2014) %>%
-  ggplot(aes(x = RACE)) +
-  geom_bar()
+full_data %>%
+  filter(source %in% c("cces2014", "cps2014")) %>%
+  ggplot(aes(x = race, color = source)) +
+  geom_bar(position = "dodge")
 ```
 
 ```{r, 2016}
-ggplot(cces_2016_viz, aes(x = race)) +
-  geom_bar()
+full_data %>%
+  filter(source %in% c("cces2016")) %>%
+  ggplot(aes(x = race, color = source)) +
+  geom_bar(position = "dodge")
 ```
