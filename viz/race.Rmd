@@ -41,9 +41,13 @@ cps%>%
   group_by(RACE, HISPAN) %>%
   summarize(count = n())
 
-#change race to hispanic / also converts back to 1,2,3 etc instead of White, Black etc
+#change race to hispanic
+cps$VOTEREG <- as.factor(cps$VOTEREG)
 cps <- cps %>%
-  mutate(RACE = if_else(HISPAN == "Hispanic", true = "Hispanic", false = RACE, missing = RACE))
+  mutate(RACE = if_else(HISPAN == "Hispanic", true = "Hispanic", 
+                        false = RACE, missing = RACE)) %>%
+  filter(VOTEREG %in% c("Registered, did not vote", "Voted"),
+         AGE >= 18)
 
 cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Eskimo",
                        Asian = "Asian only",
@@ -95,9 +99,14 @@ nc %>%
 
 nc <-nc %>%
   select(race_code, ethnic_code) %>%
-  filter(!is.na(race_code), race_code != "U") %>%
+  filter(!is.na(race_code), 
+         race_code != "U",
+         !is.na(ethnic_code)) %>%
+  mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
+                        false = race_code, missing = race_code)) %>%
   collect(n = Inf)
-  
+
+
 ```
 
 ```{r, 2012 viz}
