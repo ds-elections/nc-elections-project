@@ -98,9 +98,10 @@ cces_2016_viz <- sample_n(cces_2016, size = nrow(cces_2016),
 ```
 
 ```{r, nc}
-nc %>%
-  group_by(race_code, ethnic_code) %>%
-  summarize(count = n())
+nc_age <- nc %>%
+  group_by(age) %>%
+  summarize(count = n()) %>%
+  collect(n = Inf)
 
 nc <-nc %>%
   select(race_code, ethnic_code) %>%
@@ -110,8 +111,6 @@ nc <-nc %>%
   mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
                         false = race_code, missing = race_code)) %>%
   collect(n = Inf)
-
-
 ```
 
 ```{r, 2012 viz}
