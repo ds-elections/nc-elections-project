@@ -34,6 +34,7 @@ nc_voter <- tbl(my_db, "nc_voter")
 
 ```{r, tidy cps for viz}
 cps$HISPAN <- as.factor(cps$HISPAN)
+cps$WTFINL <- as.numeric(cps$WTFINL)
 cps$HISPAN <- fct_other(cps$HISPAN, keep = "Not Hispanic", other_level = "Hispanic")
 
 #see cases that are hispanic
@@ -60,11 +61,19 @@ cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Esk
                        Mixed = "White-Black",
                        Mixed = "White-Black-American Indian")
 
-cps_2012 <- filter(cps, YEAR = 2012)
-cps_2014 <- filter(cps, YEAR = 2014)
+cps_2012 <- filter(cps, YEAR == 2012)
+cps_2014 <- filter(cps, YEAR == 2014)
 
 cps_2012_viz <- sample_n(cps, size = nrow(cps_2012), weight = WTFINL, replace = TRUE)
 cps_2014_viz <- sample_n(cps, size = nrow(cps_2014), weight = WTFINL, replace = TRUE)
+
+cps_2012_viz <- cps_2012_viz %>%
+  mutate(source = "cps2012", race = RACE) %>%
+  select(race, source)
+
+cps_2014_viz <- cps_2014_viz %>%
+  mutate(source = "cps2014", race = RACE) %>%
+  select(race, source)
 ```
 
 ```{r, tidy cces for viz}
@@ -76,6 +85,10 @@ cces_2012 <- cces_2012 %>%
 set.seed(420)
 cces_2012_viz <- sample_n(cces_2012, size = nrow(cces_2012), 
                           weight = weight_vv, replace = TRUE)
+
+cces_2012_viz <- cces_2012_viz %>%
+  mutate(source = "cces2012") %>%
+  select(race, source)
 #2014
 cces_2014$race <- as.character(cces_2014$race)
 cces_2014 <- cces_2014 %>%
@@ -86,6 +99,10 @@ cces_2014$race <- fct_recode(cces_2014$race, Other = "Middle Eastern")
 
 cces_2014_viz <- sample_n(cces_2014, size = nrow(cces_2014), 
                           weight = weight, replace = TRUE)
+
+cces_2014_viz <- cces_2014_viz %>%
+  mutate(source = "cces2014") %>%
+  select(race, source)
 #2016
 cces_2016$race <- as.character(cces_2016$race)
 cces_2016 <- cces_2016 %>%
@@ -95,6 +112,10 @@ cces_2016$race <- fct_recode(cces_2016$race, Other = "Middle Eastern")
 
 cces_2016_viz <- sample_n(cces_2016, size = nrow(cces_2016), 
                           weight = commonweight, replace = TRUE)
+
+cces_2016_viz <- cces_2016_viz %>%
+  mutate(source = "cces2016") %>%
+  select(race, source)
 ```
 
 ```{r, nc}
@@ -103,17 +124,21 @@ nc_age <- nc %>%
   summarize(count = n()) %>%
   collect(n = Inf)
 
-nc <-nc %>%
-  select(race_code, ethnic_code) %>%
+nc_race <- nc %>%
   filter(!is.na(race_code), 
          race_code != "U",
-         !is.na(ethnic_code)) %>%
-  mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
-                        false = race_code, missing = race_code)) %>%
+         !is.na(ethnic_code),
+                age < 122)) %>%
+  select(race_code, ethnic_code, age) %>%
   collect(n = Inf)
+
+nc_race <- mutate(nc_race, race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
+                        false = race_code, missing = race_code)
 ```
 
 ```{r, 2012 viz}
+full_data <- rbind()
+
 cces_2012_viz %>%
   ggplot(aes(x = race)) +
   geom_bar()
