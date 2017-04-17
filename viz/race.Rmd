@@ -59,7 +59,12 @@ cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Esk
                        Mixed = "White-Asian",
                        Mixed = "White-Black",
                        Mixed = "White-Black-American Indian")
-cps_viz <- sample_n(cps, size = nrow(cps), weight = , replace = TRUE)
+
+cps_2012 <- filter(cps, YEAR = 2012)
+cps_2014 <- filter(cps, YEAR = 2014)
+
+cps_2012_viz <- sample_n(cps, size = nrow(cps_2012), weight = WTFINL, replace = TRUE)
+cps_2014_viz <- sample_n(cps, size = nrow(cps_2014), weight = WTFINL, replace = TRUE)
 ```
 
 ```{r, tidy cces for viz}
@@ -114,7 +119,7 @@ cces_2012_viz %>%
   ggplot(aes(x = race)) +
   geom_bar()
 
-cps %>%
+cps_2012_viz %>%
   filter(YEAR == 2012) %>%
   ggplot(aes(x = RACE)) +
   geom_bar()
@@ -124,7 +129,7 @@ cps %>%
 ggplot(cces_2014_viz, aes(x = race)) +
   geom_bar()
 
-cps %>%
+cps_2014_viz %>%
   filter(YEAR == 2014) %>%
   ggplot(aes(x = RACE)) +
   geom_bar()
