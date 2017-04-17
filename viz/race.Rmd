@@ -23,7 +23,6 @@ purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
 ```{r, nc server}
-
 my_db <- src_postgres("nc_elections",
                       host = "ncelections.c7d0c8vzwwoc.us-west-2.rds.amazonaws.com", 
                       port = 5432,
@@ -56,6 +55,7 @@ cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Esk
                        Mixed = "White-Asian",
                        Mixed = "White-Black",
                        Mixed = "White-Black-American Indian")
+cps_viz <- sample_n(cps, size = nrow(cps), weight = , replace = TRUE)
 ```
 
 ```{r, tidy cces for viz}
@@ -64,8 +64,9 @@ cces_2012$race <- as.character(cces_2012$race)
 cces_2012 <- cces_2012 %>%
   mutate(race = if_else(hispanic == "Yes", true = "Hispanic", 
                         false = race, missing = race))
-
-
+set.seed(420)
+cces_2012_viz <- sample_n(cces_2012, size = nrow(cces_2012), 
+                          weight = weight_vv, replace = TRUE)
 #2014
 cces_2014$race <- as.character(cces_2014$race)
 cces_2014 <- cces_2014 %>%
@@ -74,28 +75,33 @@ cces_2014 <- cces_2014 %>%
   
 cces_2014$race <- fct_recode(cces_2014$race, Other = "Middle Eastern")
 
+cces_2014_viz <- sample_n(cces_2014, size = nrow(cces_2014), 
+                          weight = weight, replace = TRUE)
 #2016
 cces_2016$race <- as.character(cces_2016$race)
 cces_2016 <- cces_2016 %>%
   mutate(race = if_else(hispanic == "Yes", true = "Hispanic", false = race, missing = race))
   
 cces_2016$race <- fct_recode(cces_2016$race, Other = "Middle Eastern")
+
+cces_2016_viz <- sample_n(cces_2016, size = nrow(cces_2016), 
+                          weight = commonweight, replace = TRUE)
 ```
 
 ```{r, nc}
 nc %>%
-  group_by(ethnic_code) %>%
+  group_by(race_code, ethnic_code) %>%
   summarize(count = n())
 
 nc <- nc %>%
   select(race_code, ethnic_code) %>%
-  filter
+  filter(!is.na(race_code), race_code = "U") %>%
+  
   
 ```
 
 ```{r, 2012 viz}
-cces_2012 %>%
-  mutate(race1 = )
+cces_2012_viz %>%
   ggplot(aes(x = race)) +
   geom_bar()
 
@@ -106,7 +112,7 @@ cps %>%
 ```
 
 ```{r, 2014}
-ggplot(cces_2014, aes(x = race)) +
+ggplot(cces_2014_viz, aes(x = race)) +
   geom_bar()
 
 cps %>%
@@ -116,7 +122,7 @@ cps %>%
 ```
 
 ```{r, 2016}
-ggplot(cces_2016, aes(x = race)) +
+ggplot(cces_2016_viz, aes(x = race)) +
   geom_bar()
 ```
 
