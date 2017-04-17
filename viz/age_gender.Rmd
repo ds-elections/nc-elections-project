@@ -7,10 +7,12 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(knitr)
+library(ggthemes)
 library(lubridate)
 ```
 
 ```{r, load data}
+# setwd('/Users/alisakwok/Desktop/math241/nc-elections-project')
 if(!dir.exists("viz/temp")) dir.create("viz/temp")
 purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
 purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
@@ -18,22 +20,43 @@ purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
 ```{r}
+set.seed(800)
+
+cps_sample <- cps %>%
+  mutate(WTFINL = as.numeric(WTFINL)) %>%
+  sample_n(size = nrow(cps), replace = TRUE, weight = WTFINL)
+
+cces_2012_sample <- cces_2012 %>%
+  filter(!is.na(weight_vv_post)) %>%
+  sample_n(size = nrow(cces_2012), replace = TRUE, weight = weight_vv_post)
+```
+
+
+```{r}
 # AGE, 2012
+lcolors <- c("CPS" = "#51acb4", "CCES" = "#7cb451", "VOTER" = "#b49251")
 
-lcolors <- c("cps" = "black", "cces" = "blue", "nc" = "purple")
-
-cps_2012 <- cps %>%
-  filter(YEAR == "2012") %>%
+cps_2012_sample <- cps_sample %>%
+  filter(YEAR == "2012", VOTEREG == "Voted") %>%
   mutate(AGE = as.numeric(AGE, na.rm = TRUE))
 
-cces_2012 %>%
+nc_2012 <- nc %>%
+  filter(date_part("year", election_lbl) == 2012, age < 100) %>%
+  group_by(voter_reg_num) %>%
+  summarise(age = mean(age)) %>%
+  as.data.frame()
+
+cces_2012_sample %>%
   mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
          age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2012")), "years")) %>%
+  filter(votereg == "Yes") %>%
   ggplot(aes(x = age)) +
-  geom_density(aes(color = "cces")) +
-  geom_density(data = cps_2012, aes(x = AGE, color = "cps")) +
-  scale_color_manual(name = "Dataset", values = lcolors) +
-  labs(title = "2012 NC age distributions reported by CCES and CPS", x = "Age", y = "Density")
+  geom_line(aes(color = "CCES"), stat = "density") +
+  geom_line(data = cps_2012_sample, aes(x = AGE, color = "CPS"), stat = "density") +
+  geom_line(data = nc_2012, aes(x = age, color = "VOTER"), stat = "density") +
+  scale_color_manual(name = "Data", values = lcolors) +
+  labs(title = "2012 NC electorate age distributions reported by the CCES, CPS, and voter file", x = "Age", y = "Density") +
+  theme_solarized_2(light = FALSE)
 ```
 
 
