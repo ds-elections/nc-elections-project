@@ -16,7 +16,7 @@ library(forcats)
 ```
 
 ```{r, load data}
-if(!dir.exists("viz/temp")) dir.create("viz/temp")
+if(!dir.exists("~/nc-elections-project/viz/temp")) dir.create("~/nc-elections-project/viz/temp")
 purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
 purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
@@ -74,6 +74,7 @@ cps_2012_viz <- cps_2012_viz %>%
 cps_2014_viz <- cps_2014_viz %>%
   mutate(source = "cps2014", race = RACE) %>%
   select(race, source)
+rm(list = c("cps", "cps_2012", "cps_2014"))
 ```
 
 ```{r, tidy cces for viz}
@@ -116,14 +117,10 @@ cces_2016_viz <- sample_n(cces_2016, size = nrow(cces_2016),
 cces_2016_viz <- cces_2016_viz %>%
   mutate(source = "cces2016") %>%
   select(race, source)
+rm(list = c("cces_2012", "cces_2014", "cces_2016"))
 ```
 
 ```{r, nc}
-nc_age <- nc %>%
-  group_by(age) %>%
-  summarize(count = n()) %>%
-  collect(n = Inf)
-
 nc_race <- nc %>%
   filter(!is.na(race_code), 
          race_code != "U",
@@ -132,84 +129,121 @@ nc_race <- nc %>%
   select(race_code, ethnic_code, age, registr_dt) %>%
   collect(n = Inf)
 
-nc_race <- nc_race %>% 
+nc_race <- nc_race %>%
   mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
                         false = race_code, missing = race_code))
+#16 cases where race is a space
+nc_race <- filter(nc_race, race_code != " ")
 nc_race$race_code <- fct_recode(nc_race$race_code,
                                 `Native American` = "I",
                                 Asian = "A",
                                 Black = "B",
                                 Mixed = "M",
-                                Other = "Other",
+                                Other = "O",
                                 White = "W")
 nc_race_2012 <- nc_race %>%
-  filter(registr_dt <= as.Date(2012-10-16)) %>%
+  filter(registr_dt <= as.Date("2012-10-16")) %>%
   mutate(race = race_code, source = "nc2012") %>%
   select(race, source)
 
 nc_race_2014 <- nc_race %>%
-  filter(registr_dt <= as.Date(2014-10-13)) %>%
+  filter(registr_dt <= as.Date("2014-10-13")) %>%
   mutate(race = race_code, source = "nc2014") %>%
   select(race, source)
 
 nc_race_2016 <- nc_race %>%
-  filter(registr_dt <= as.Date(2016-10-18)) %>%
+  filter(registr_dt <= as.Date("2016-10-18")) %>%
   mutate(race = race_code, source = "nc2016") %>%
   select(race, source)
+#optional remove nc_race file
+#rm(nc_race)
 ```
 
 ```{r, 2012 viz}
-full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016)
+full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, 
+                   cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016)
+#optional removal of all data except full data
+#rm(c("cces_2012_viz", "cces_2014_viz", "cces_2016_viz", "cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014", "nc_race_2016"))
 
 to_plot_2012 <- full_data %>%
-  filter(source %in% c("cces2012", "cps2012", "nc2012")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
-  right_join(full_data, by = "source") %>% 
+  right_join(full_data, by = "source") %>%
+  filter(source %in% c("cces2012", "cps2012", "nc2012")) %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
-ggplot(to_plot_2012, aes(source, prop, fill = race)) +
+ggplot(to_plot_2012, aes(x = source, y = prop, fill = race)) +
   geom_col(position = "dodge")
 #zoom
 ggplot(to_plot_2012, aes(source, prop, fill = race)) +
   geom_col(position = "dodge") +
  coord_cartesian(ylim = c(0,.25)) +
-  geom_text(aes(label = prop), vjust=-.05)
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
+#extra
+ggplot(to_plot_2012, aes(x = race, y = prop, fill = source)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
 ```
 
 ```{r, 2014}
 to_plot_2014 <- full_data %>%
-  filter(source %in% c("cces2012", "cps2014", "nc2014")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
-  right_join(full_data, by = "source") %>% 
+  right_join(full_data, by = "source") %>%
+  filter(source %in% c("cces2014", "cps2014", "nc2014")) %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
-ggplot(to_plot_2014, aes(source, prop, fill = race)) +
+ggplot(to_plot_2014, aes(x = source, y = prop, fill = race)) +
   geom_col(position = "dodge")
 #zoom
 ggplot(to_plot_2014, aes(source, prop, fill = race)) +
   geom_col(position = "dodge") +
  coord_cartesian(ylim = c(0,.25)) +
-  geom_text(aes(label = prop), vjust=-.05)
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
+#extra
+ggplot(to_plot_2014, aes(x = race, y = prop, fill = source)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
 ```
 
 ```{r, 2016}
 to_plot_2016 <- full_data %>%
-  filter(source %in% c("cces2016", "nc2016")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
-  right_join(full_data, by = "source") %>% 
+  right_join(full_data, by = "source") %>%
+  filter(source %in% c("cces2016", "nc2016")) %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
-ggplot(to_plot_2016, aes(source, prop, fill = race)) +
+ggplot(to_plot_2016, aes(x = source, y = prop, fill = race)) +
   geom_col(position = "dodge")
 #zoom
 ggplot(to_plot_2016, aes(source, prop, fill = race)) +
   geom_col(position = "dodge") +
  coord_cartesian(ylim = c(0,.25)) +
-  geom_text(aes(label = prop), vjust=-.05)
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 3)
+#extra
+ggplot(to_plot_2016, aes(x = race, y = prop, fill = source)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 3)
 ```
