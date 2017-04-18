@@ -151,39 +151,65 @@ nc_race_2014 <- nc_race %>%
   filter(registr_dt <= as.Date(2014-10-13)) %>%
   mutate(race = race_code, source = "nc2014") %>%
   select(race, source)
+
+nc_race_2016 <- nc_race %>%
+  filter(registr_dt <= as.Date(2016-10-18)) %>%
+  mutate(race = race_code, source = "nc2012") %>%
+  select(race, source)
 ```
 
 ```{r, 2012 viz}
-full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, cps_2014_viz, nc_race_2012, nc_race_2014)
+full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016)
 
-to_plot <- full_data %>%
+to_plot_2012 <- full_data %>%
+  filter(source %in% c("cces_2012_viz", "cps_2012_viz", "nc_race_2012")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>% 
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
-full_data %>%
-  filter(source %in% c("cces2012", "cps2012")) %>%
-  ggplot(aes(x = race, color = source)) +
-  geom_bar(position = "dodge")
+ggplot(to_plot_2012, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge")
+#zoom
+ggplot(to_plot_2012, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge") +
+ coord_cartesian(ylim = c(0,.25)) +
+  geom_text(aes(label = prop), vjust=-.05)
 ```
 
 ```{r, 2014}
-full_data %>%
-  filter(source %in% c("cces2014", "cps2014")) %>%
-  ggplot(aes(x = race, color = source)) +
-  geom_bar(position = "dodge")
+to_plot_2014 <- full_data %>%
+  filter(source %in% c("cces_2014_viz", "cps_2014_viz", "nc_race_2014")) %>%
+  group_by(source) %>%
+  summarise(n = n()) %>% 
+  right_join(full_data, by = "source") %>% 
+  group_by(source, race) %>% 
+  summarise(prop = n()/median(n))
 
-full_data %>%
-  filter(source %in% c("cces2012", "cps2012")) %>%
-  ggplot(aes(x = source, fill = race)) +
-  geom_bar(position = "fill")
+ggplot(to_plot_2014, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge")
+#zoom
+ggplot(to_plot_2014, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge") +
+ coord_cartesian(ylim = c(0,.25)) +
+  geom_text(aes(label = prop), vjust=-.05)
 ```
 
 ```{r, 2016}
-full_data %>%
-  filter(source %in% c("cces2016")) %>%
-  ggplot(aes(x = race, color = source)) +
-  geom_bar(position = "dodge")
+to_plot_2016 <- full_data %>%
+  filter(source %in% c("cces_2016_viz", "nc_race_2016")) %>%
+  group_by(source) %>%
+  summarise(n = n()) %>% 
+  right_join(full_data, by = "source") %>% 
+  group_by(source, race) %>% 
+  summarise(prop = n()/median(n))
+
+ggplot(to_plot_2016, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge")
+#zoom
+ggplot(to_plot_2016, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge") +
+ coord_cartesian(ylim = c(0,.25)) +
+  geom_text(aes(label = prop), vjust=-.05)
 ```
