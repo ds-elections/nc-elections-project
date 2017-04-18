@@ -19,9 +19,11 @@ nc_voter <- tbl(my_db, "nc_voter")
 ```{r nc_wrangle}
 nc <- nc_vhis %>%
   left_join(nc_voter, by = c("ncid" = "ncid")) %>%
-  filter(status_cd == "A") %>%
+  filter(status_cd == "A",
+         voting_method != "ELIGIBLE DID NOT VOTE") %>%
   select(county_desc.x,
          voter_reg_num,
+         registr_dt,
          zip_code,
          race_code:birth_age,
          precinct_abbrv:precinct_desc,
@@ -31,7 +33,8 @@ nc <- nc_vhis %>%
          precinct = precinct_desc,
          party_code = party_cd,
          age = birth_age) %>%
-  mutate(election_lbl = to_date(election_lbl, "MM/DD/YYYY"))
+  mutate(election_lbl = to_date(election_lbl, "MM/DD/YYYY"),
+         registr_dt = to_date(election_lbl, "MM/DD/YYYY"))
 ```
 
 
