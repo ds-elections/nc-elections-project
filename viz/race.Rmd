@@ -129,7 +129,7 @@ nc_race <- nc %>%
          race_code != "U",
          !is.na(ethnic_code),
                 age < 122) %>%
-  select(race_code, ethnic_code, age) %>%
+  select(race_code, ethnic_code, age, registr_dt) %>%
   collect(n = Inf)
 
 nc_race <- nc_race %>% 
@@ -137,16 +137,31 @@ nc_race <- nc_race %>%
                         false = race_code, missing = race_code))
 nc_race$race_code <- fct_recode(nc_race$race_code,
                                 `Native American` = "I",
-                                Asian = "A"
+                                Asian = "A",
                                 Black = "B",
                                 Mixed = "M",
                                 Other = "Other",
                                 White = "W")
-nc_race <- 
+nc_race_2012 <- nc_race %>%
+  filter(registr_dt <= as.Date(2012-10-16)) %>%
+  mutate(race = race_code, source = "nc2012") %>%
+  select(race, source)
+
+nc_race_2014 <- nc_race %>%
+  filter(registr_dt <= as.Date(2014-10-13)) %>%
+  mutate(race = race_code, source = "nc2014") %>%
+  select(race, source)
 ```
 
 ```{r, 2012 viz}
-full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, cps_2014_viz)
+full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, cps_2014_viz, nc_race_2012, nc_race_2014)
+
+to_plot <- full_data %>%
+  group_by(source) %>%
+  summarise(n = n()) %>% 
+  right_join(full_data, by = "source") %>% 
+  group_by(source, race) %>% 
+  summarise(prop = n()/median(n))
 
 full_data %>%
   filter(source %in% c("cces2012", "cps2012")) %>%
