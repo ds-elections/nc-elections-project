@@ -132,8 +132,17 @@ nc_race <- nc %>%
   select(race_code, ethnic_code, age) %>%
   collect(n = Inf)
 
-nc_race <- mutate(nc_race, race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
+nc_race <- nc_race %>% 
+  mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
                         false = race_code, missing = race_code))
+nc_race$race_code <- fct_recode(nc_race$race_code,
+                                `Native American` = "I",
+                                Asian = "A"
+                                Black = "B",
+                                Mixed = "M",
+                                Other = "Other",
+                                White = "W")
+nc_race <- 
 ```
 
 ```{r, 2012 viz}
@@ -150,6 +159,11 @@ full_data %>%
   filter(source %in% c("cces2014", "cps2014")) %>%
   ggplot(aes(x = race, color = source)) +
   geom_bar(position = "dodge")
+
+full_data %>%
+  filter(source %in% c("cces2012", "cps2012")) %>%
+  ggplot(aes(x = source, fill = race)) +
+  geom_bar(position = "fill")
 ```
 
 ```{r, 2016}
