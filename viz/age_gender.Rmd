@@ -40,8 +40,18 @@ cps_2012_sample <- cps_sample %>%
   filter(YEAR == "2012", VOTEREG == "Voted") %>%
   mutate(AGE = as.numeric(AGE, na.rm = TRUE))
 
+cps_2014_sample <- cps_sample %>%
+  filter(YEAR == "2014", VOTEREG == "Voted") %>%
+  mutate(AGE = as.numeric(AGE, na.rm = TRUE))
+
 nc_2012 <- nc %>%
   filter(date_part("year", election_lbl) == 2012, age < 100) %>%
+  group_by(voter_reg_num) %>%
+  summarise(age = mean(age)) %>%
+  as.data.frame()
+
+nc_2014 <- nc %>%
+  filter(date_part("year", election_lbl) == 2014, age < 100) %>%
   group_by(voter_reg_num) %>%
   summarise(age = mean(age)) %>%
   as.data.frame()
@@ -56,6 +66,13 @@ cces_2012_sample %>%
   geom_line(data = nc_2012, aes(x = age, color = "VOTER"), stat = "density") +
   scale_color_manual(name = "Data", values = lcolors) +
   labs(title = "2012 NC electorate age distributions reported by the CCES, CPS, and voter file", x = "Age", y = "Density") +
+  theme_solarized_2(light = FALSE)
+
+cps_2014_sample %>%
+  ggplot(aes(x = AGE)) +
+  geom_line(aes(color = "CPS"), stat = "density") +
+  geom_line(data = nc_2014, aes(x = age, color = "VOTER"), stat = "density") +
+  scale_color_manual(name = "Data", values = lcolors) +
   theme_solarized_2(light = FALSE)
 ```
 
