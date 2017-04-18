@@ -154,7 +154,7 @@ nc_race_2014 <- nc_race %>%
 
 nc_race_2016 <- nc_race %>%
   filter(registr_dt <= as.Date(2016-10-18)) %>%
-  mutate(race = race_code, source = "nc2012") %>%
+  mutate(race = race_code, source = "nc2016") %>%
   select(race, source)
 ```
 
@@ -162,7 +162,7 @@ nc_race_2016 <- nc_race %>%
 full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016)
 
 to_plot_2012 <- full_data %>%
-  filter(source %in% c("cces_2012_viz", "cps_2012_viz", "nc_race_2012")) %>%
+  filter(source %in% c("cces2012", "cps2012", "nc2012")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>% 
@@ -180,7 +180,7 @@ ggplot(to_plot_2012, aes(source, prop, fill = race)) +
 
 ```{r, 2014}
 to_plot_2014 <- full_data %>%
-  filter(source %in% c("cces_2014_viz", "cps_2014_viz", "nc_race_2014")) %>%
+  filter(source %in% c("cces2012", "cps2014", "nc2014")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>% 
@@ -198,7 +198,7 @@ ggplot(to_plot_2014, aes(source, prop, fill = race)) +
 
 ```{r, 2016}
 to_plot_2016 <- full_data %>%
-  filter(source %in% c("cces_2016_viz", "nc_race_2016")) %>%
+  filter(source %in% c("cces2016", "nc2016")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>% 
