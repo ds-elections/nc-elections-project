@@ -30,15 +30,10 @@ CPS / CCES / ANES data identified, imported
 All data wrangled, tidied
 
 #### Wednesday, April 12
-Initial visualizations, models made
-
-Work on app started
-
-#### Monday, April 17
-App finished
+Initial visualizations made
 
 #### Wednesday, April 19 - Sunday, April 23
-Presentation preparation
+Work on app started, presentation preparation
 
 #### Wednesday, April 26 - Friday, April 28
 Presentations
