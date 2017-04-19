@@ -59,7 +59,7 @@ nc_2014 <- nc %>%
 cces_2012_sample %>%
   mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
          age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2012")), "years")) %>%
-  filter(votereg == "Yes") %>%
+  filter(CC316 == "Yes. I definitely voted.") %>%
   ggplot(aes(x = age)) +
   geom_line(aes(color = "CCES"), stat = "density") +
   geom_line(data = cps_2012_sample, aes(x = AGE, color = "CPS"), stat = "density") +
@@ -73,6 +73,7 @@ cps_2014_sample %>%
   geom_line(aes(color = "CPS"), stat = "density") +
   geom_line(data = nc_2014, aes(x = age, color = "VOTER"), stat = "density") +
   scale_color_manual(name = "Data", values = lcolors) +
+  labs(title = "2014 NC electorate age distributions reported by the CPS and voter file", x = "Age", y = "Density") +
   theme_solarized_2(light = FALSE)
 ```
 
