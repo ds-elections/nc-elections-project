@@ -33,6 +33,7 @@ nc_voter <- tbl(my_db, "nc_voter")
 ```
 
 ```{r, tidy cps for viz}
+set.seed(42)
 cps$HISPAN <- as.factor(cps$HISPAN)
 cps$WTFINL <- as.numeric(cps$WTFINL)
 cps$HISPAN <- fct_other(cps$HISPAN, keep = "Not Hispanic", other_level = "Hispanic")
@@ -83,7 +84,7 @@ cces_2012$race <- as.character(cces_2012$race)
 cces_2012 <- cces_2012 %>%
   mutate(race = if_else(hispanic == "Yes", true = "Hispanic", 
                         false = race, missing = race))
-set.seed(420)
+
 cces_2012_viz <- sample_n(cces_2012, size = nrow(cces_2012), 
                           weight = weight_vv, replace = TRUE)
 
