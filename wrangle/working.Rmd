@@ -1,0 +1,243 @@
+---
+title: "nc"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(forcats)
+library(knitr)
+library(GGally)
+```
+
+### NC voter files
+
+```{r}
+nc_vhis <- read_tsv("../data/nc_voter/ncvhis_Statewide.txt") %>%
+  select(county_desc:voting_method, voted_party_desc:ncid) %>%
+  mutate(election_lbl = mdy(election_lbl)) %>%
+  filter(year(election_lbl) %in% c(2016, 2014, 2012)) %>%
+  group_by(election_desc) %>%
+  mutate(new_id = paste(voter_reg_num, ncid)) %>%
+  distinct(new_id, .keep_all = TRUE)
+
+nc_voter <- read_tsv("../data/nc_voter/ncvoter_Statewide.txt") %>%
+  filter(status_cd == "A") %>%
+  select(county_desc:voter_reg_num,
+         zip_code,
+         race_code:birth_age,
+         registr_dt:precinct_desc,
+         ncid) %>%
+  mutate(new_id = paste(voter_reg_num, ncid)) %>%
+  distinct(new_id, .keep_all = TRUE)
+
+nc <- nc_vhis %>%
+  left_join(nc_voter, by = c("new_id" = "new_id")) %>%
+  select(county_desc.x,
+         election_lbl:pct_description,
+         new_id,
+         zip_code:registr_dt) %>%
+  rename(county = county_desc.x,
+         party_code = party_cd,
+         age = birth_age)
+
+get_age <- function(year, age2016) {
+  return(age2016 - 2016 + year)
+}
+
+nc <- nc %>%
+  mutate(age = get_age(year(election_lbl), age))
+
+rm(nc_vhis, nc_voter)
+
+nc_2012_ge <- nc %>%
+  filter(election_desc == "11/06/2012 GENERAL", age < 100)
+
+nc_2012 <- nc %>%
+  filter(year(election_lbl) == 2012, age < 100)
+
+nc_2014 <- nc %>%
+  filter(year(election_lbl) == 2014, age < 100)
+
+nc_2016 <- nc %>%
+  filter(year(election_lbl) == 2016, age < 100)
+
+rm(nc)
+```
+
+### CPS
+
+```{r}
+setwd("/Users/alisakwok/Desktop/math241/nc-elections-project")
+if(!dir.exists("viz/temp")) dir.create("viz/temp")
+purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
+
+set.seed(800)
+
+cps_sample <- cps %>%
+  mutate(WTFINL = as.numeric(WTFINL)) %>%
+  sample_n(size = nrow(cps), replace = TRUE, weight = WTFINL)
+
+rm(cps)
+
+cps_2012_sample_ge <- cps_sample %>%
+  filter(YEAR == "2012", VOTEREG == "Voted") %>%
+  mutate(AGE = as.numeric(AGE, na.rm = TRUE),
+         SEX = recode(SEX, "Male" = "M", "Female" = "F"))
+
+cps_2012_sample <- cps_sample %>%
+  filter(YEAR == "2012", VOTEREG %in% c("Voted", "Registered, did not vote")) %>%
+  mutate(AGE = as.numeric(AGE, na.rm = TRUE),
+         SEX = recode(SEX, "Male" = "M", "Female" = "F"))
+
+cps_2014_sample <- cps_sample %>%
+  filter(YEAR == "2014", VOTEREG %in% c("Voted", "Registered, did not vote")) %>%
+  mutate(AGE = as.numeric(AGE, na.rm = TRUE),
+         SEX = recode(SEX, "Male" = "M", "Female" = "F"))
+
+rm(cps_sample)
+```
+
+### CCES
+
+```{r}
+cces_2012 <- read_tsv("../data/cces/CCES12_Common_VV.tab.tsv") %>%
+  filter(inputstate == 37) %>%
+  mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
+         age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2012")), "years"),
+         race = as.factor(recode(race,
+                           `1` = "White",
+                           `2` = "Black or African-American",
+                           `3` = "Hispanic or Latino" ,
+                           `4` = "Asian or Asian-American",
+                           `5` = "Native American",
+                           `6` = "Middle Eastern",
+                           `7` = "Mixed Race",
+                           `8` = "Other")),
+         gender = as.factor(recode(gender,
+                               `1` = "M",
+                               `2` = "F")),
+         hispanic = as.factor(recode(hispanic,
+                               `1` = "Yes",
+                               `0` = "No")))
+  
+cces_2014 <- read_tsv("../data/cces/CCES14_Common_Content_Validated.tab.tsv") %>%
+  filter(inputstate == 37) %>% # 37 = North Carolina
+  select(V101:countyfips,
+         birthyr:hispanic,
+         -race_other,
+         votereg,
+         71:100) %>%
+  mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
+         age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2014")), "years"),
+         race = as.factor(recode(race,
+                           `1` = "White",
+                           `2` = "Black or African-American",
+                           `3` = "Hispanic or Latino" ,
+                           `4` = "Asian or Asian-American",
+                           `5` = "Native American",
+                           `6` = "Middle Eastern",
+                           `7` = "Mixed Race",
+                           `8` = "Other")),
+         gender = as.factor(recode(gender,
+                               `1` = "M",
+                               `2` = "F")),
+         hispanic = as.factor(recode(hispanic,
+                               `1` = "Yes",
+                               `0` = "No")),
+         CC14_316 = as.factor(recode(CC14_316,
+                               `1` = "No",
+                               `2` = "I usually vote but did not vote in 2012",
+                               `3` = "I am not sure",
+                               `4` = "Yes, I definitely voted")))
+
+cces_2016 <- read_tsv("../data/cces/CCES2016_Common_FirstRelease.tab.tsv") %>%
+  filter(inputstate == 37) %>% # 37 = North Carolina
+  select(V101:commonweight_post,
+         cdid113:countyname,
+         votereg,
+         inputzip:race,
+         hispanic) %>%
+  mutate(gender = as.factor(recode(gender,
+                                   `1` = "M",
+                                   `2` = "F")),
+         birthyr = paste(birthyr, "-01-01", sep = ""),
+         age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2016")), "years"))
+
+cces_2012_sample <- cces_2012 %>%
+  filter(!is.na(weight_vv_post)) %>%
+  sample_n(size = nrow(cces_2012), replace = TRUE, weight = weight_vv_post)
+
+rm(cces_2012)
+
+cces_2014_sample <- cces_2014 %>%
+  filter(!is.na(weight)) %>%
+  sample_n(size = nrow(cces_2014), replace = TRUE, weight = weight)
+
+cces_2014_sample_ge <- cces_2014_sample %>%
+  filter(CC14_316 == "Yes, I definitely voted") %>% # voted in 2012
+  mutate(age = age - 2)
+
+rm(cces_2014)
+
+cces_2016_sample <- cces_2016 %>%
+  filter(!is.na(commonweight_post)) %>%
+  sample_n(size = nrow(cces_2016), replace = TRUE, weight = commonweight_post)
+
+rm(cces_2016)
+```
+
+### Visualizations
+
+#### 2012 General Election: NC Voter Age Distributions
+
+```{r}
+lcolors <- c("CPS" = "#51acb4", "CCES" = "#8d8d8d", "VOTER" = "#ff6767")
+ltypes <- c("M" = 2, "F" = 1)
+
+cces_2014_sample_ge %>%
+  ggplot(aes(x = age)) +
+  geom_line(aes(color = "CCES"), stat = "density") +
+  geom_line(data = cps_2012_sample_ge, aes(x = AGE, color = "CPS"), stat = "density") +
+  geom_line(data = nc_2012_ge, aes(x = age, color = "VOTER"), stat = "density") +
+  scale_color_manual(name = "Data", values = lcolors) +
+  labs(title = "2012 General Election: NC voter age distributions reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
+```
+
+#### 2012, 2014, 2016: NC Registered Voter Age Distributions By Gender
+
+```{r}
+nc_2012 %>%
+  filter(gender_code %in% c("M", "F")) %>%
+  distinct(new_id, .keep_all = TRUE) %>%
+  ggplot(aes(x = age)) +
+  geom_line(aes(color = "VOTER", linetype = gender_code), stat = "density") +
+  geom_line(data = cps_2012_sample, aes(x = AGE, color = "CPS", linetype = SEX), stat = "density") +
+  geom_line(data = cces_2012_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
+  scale_color_manual(name = "Data", values = lcolors) +
+  scale_linetype_manual(name = "Gender", values = ltypes)
+
+nc_2014 %>%
+  filter(gender_code %in% c("M", "F")) %>%
+  distinct(new_id, .keep_all = TRUE) %>%
+  ggplot(aes(x = age)) +
+  geom_line(aes(color = "VOTER", linetype = gender_code), stat = "density") +
+  geom_line(data = cps_2014_sample, aes(x = AGE, color = "CPS", linetype = SEX), stat = "density") +
+  geom_line(data = cces_2014_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
+  scale_color_manual(name = "Data", values = lcolors) +
+  scale_linetype_manual(name = "Gender", values = ltypes)
+
+nc_2016 %>%
+  filter(gender_code %in% c("M", "F")) %>%
+  distinct(new_id, .keep_all = TRUE) %>%
+  ggplot(aes(x = age)) +
+  geom_line(aes(color = "VOTER", linetype = gender_code), stat = "density") +
+  geom_line(data = cces_2016_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
+  scale_color_manual(name = "Data", values = lcolors) +
+  scale_linetype_manual(name = "Gender", values = ltypes)
+```
+
+
+
