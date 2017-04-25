@@ -1,5 +1,5 @@
 ---
-title: "race_viz"
+title: "race_voting_pop"
 author: "Edwin Alvarado"
 date: "April 13, 2017"
 output: html_document
@@ -48,15 +48,14 @@ cps$VOTEREG <- as.factor(cps$VOTEREG)
 cps <- cps %>%
   mutate(RACE = if_else(HISPAN == "Hispanic", true = "Hispanic", 
                         false = RACE, missing = RACE)) %>%
-  filter(VOTEREG %in% c("Registered, did not vote", "Voted"),
+  filter(VOTEREG %in% c("Voted"),
          AGE >= 18)
-
+#NoOtherCategoryWhen 
 cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Eskimo",
                        Asian = "Asian only",
                        Black = "Black-American Indian",
                        Mixed = "Black-Asian",
                        Black = "Black/Negro",
-                       Other = "Hawaiian/Pacific Islander only",
                        `Native American` = "White-American Indian",
                        Mixed = "White-Asian",
                        Mixed = "White-Black",
@@ -76,49 +75,6 @@ cps_2014_viz <- cps_2014_viz %>%
   mutate(source = "cps2014", race = RACE) %>%
   select(race, source)
 rm(list = c("cps", "cps_2012", "cps_2014"))
-```
-
-```{r, tidy cces for viz}
-#this changes people who answered yes to hispanic, to hispanic in race column
-cces_2012$race <- as.character(cces_2012$race)
-cces_2012 <- cces_2012 %>%
-  mutate(race = if_else(hispanic == "Yes", true = "Hispanic", 
-                        false = race, missing = race))
-
-cces_2012_viz <- sample_n(cces_2012, size = nrow(cces_2012), 
-                          weight = weight_vv, replace = TRUE)
-
-cces_2012_viz <- cces_2012_viz %>%
-  mutate(source = "cces2012") %>%
-  select(race, source)
-#2014
-cces_2014$race <- as.character(cces_2014$race)
-cces_2014 <- cces_2014 %>%
-  mutate(race = if_else(hispanic == "Yes", true = "Hispanic", 
-                        false = race, missing = race))
-  
-cces_2014$race <- fct_recode(cces_2014$race, Other = "Middle Eastern")
-
-cces_2014_viz <- sample_n(cces_2014, size = nrow(cces_2014), 
-                          weight = weight, replace = TRUE)
-
-cces_2014_viz <- cces_2014_viz %>%
-  mutate(source = "cces2014") %>%
-  select(race, source)
-#2016
-cces_2016$race <- as.character(cces_2016$race)
-cces_2016 <- cces_2016 %>%
-  mutate(race = if_else(hispanic == "Yes", true = "Hispanic", false = race, missing = race))
-  
-cces_2016$race <- fct_recode(cces_2016$race, Other = "Middle Eastern")
-
-cces_2016_viz <- sample_n(cces_2016, size = nrow(cces_2016), 
-                          weight = commonweight, replace = TRUE)
-
-cces_2016_viz <- cces_2016_viz %>%
-  mutate(source = "cces2016") %>%
-  select(race, source)
-rm(list = c("cces_2012", "cces_2014", "cces_2016"))
 ```
 
 ```{r, nc}
@@ -151,20 +107,14 @@ nc_race_2014 <- nc_race %>%
   filter(registr_dt <= as.Date("2014-10-13")) %>%
   mutate(race = race_code, source = "nc2014") %>%
   select(race, source)
-
-nc_race_2016 <- nc_race %>%
-  filter(registr_dt <= as.Date("2016-10-18")) %>%
-  mutate(race = race_code, source = "nc2016") %>%
-  select(race, source)
 #optional remove nc_race file
 #rm(nc_race)
 ```
 
 ```{r, 2012 viz}
-full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, 
-                   cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016)
+full_data <- rbind(cps_2012_viz, cps_2014_viz, nc_race_2012, nc_race_2014)
 #optional removal of all data except full data
-#rm(c("cces_2012_viz", "cces_2014_viz", "cces_2016_viz", "cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014", "nc_race_2016"))
+#rm(c("cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014"))
 
 to_plot_2012 <- full_data %>%
   group_by(source) %>%
