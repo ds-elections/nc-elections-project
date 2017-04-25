@@ -217,7 +217,8 @@ nc_2012 %>%
   geom_line(data = cps_2012_sample, aes(x = AGE, color = "CPS", linetype = SEX), stat = "density") +
   geom_line(data = cces_2012_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
   scale_color_manual(name = "Data", values = lcolors) +
-  scale_linetype_manual(name = "Gender", values = ltypes)
+  scale_linetype_manual(name = "Gender", values = ltypes) +
+  labs(title = "2012 NC voter age distributions by gender, reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
 
 nc_2014 %>%
   filter(gender_code %in% c("M", "F")) %>%
@@ -227,7 +228,8 @@ nc_2014 %>%
   geom_line(data = cps_2014_sample, aes(x = AGE, color = "CPS", linetype = SEX), stat = "density") +
   geom_line(data = cces_2014_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
   scale_color_manual(name = "Data", values = lcolors) +
-  scale_linetype_manual(name = "Gender", values = ltypes)
+  scale_linetype_manual(name = "Gender", values = ltypes) +
+  labs(title = "2014 NC voter age distributions by gender, reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
 
 nc_2016 %>%
   filter(gender_code %in% c("M", "F")) %>%
@@ -236,7 +238,8 @@ nc_2016 %>%
   geom_line(aes(color = "VOTER", linetype = gender_code), stat = "density") +
   geom_line(data = cces_2016_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
   scale_color_manual(name = "Data", values = lcolors) +
-  scale_linetype_manual(name = "Gender", values = ltypes)
+  scale_linetype_manual(name = "Gender", values = ltypes) +
+  labs(title = "2016 NC voter age distributions by gender, reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
 ```
 
 
