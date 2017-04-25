@@ -34,7 +34,35 @@ nc <- nc_vhis %>%
          party_code = party_cd,
          age = birth_age) %>%
   mutate(election_lbl = to_date(election_lbl, "MM/DD/YYYY"),
-         registr_dt = to_date(election_lbl, "MM/DD/YYYY"))
+         registr_dt = to_date(registr_dt, "MM/DD/YYYY"))
 ```
 
+```{r}
+elec_day_16 <- as.Date("2016-11-08")
+reg_day_16 <- elec_day_16 - 25
+
+# All elligible voters in the registration file
+elligible_16 <- nc_voter %>%
+  mutate(registr_dt = to_date(registr_dt, "MM/DD/YYYY")) %>% 
+  filter(registr_dt <= reg_day_16, status_cd == "A" | status_cd == "S")
+
+# All ballots cast in the November 2016 election
+voted_16 <- nc_vhis %>% 
+  mutate(election_lbl = to_date(election_lbl, "MM/DD/YYYY")) %>% 
+  filter(election_lbl == elec_day_16)
+
+# Join with NA for no vote
+nc_16 <- elligible_16 %>% 
+  left_join(voted_16, by = c("ncid" = "ncid"))
+# save this to the database for quick access?
+
+# How many people voted with each method
+temp <- nc_16 %>% group_by(voting_method) %>% summarise(count = n()) %>% collect()
+
+sum(temp$count[-which(is.na(temp$voting_method))]) # Number of ballots (4,769,640)
+sum(temp$count) # Number of voters (6,914,248)
+
+# Voter turnout (68.9%)
+sum(temp$count[-which(is.na(temp$voting_method))])/sum(temp$count) 
+```
 
