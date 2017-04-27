@@ -17,33 +17,65 @@ library(shiny)
 Overview
 =======================================================================
 
+### Project Overview
+
 This is what our project is about.
 
 Data
 =======================================================================
+
+### Data wrangling
 
 This is what our data looked like and what we did to it
 
 Charts
 =======================================================================
 
-Inputs {.sidebar}
+Parameters {.sidebar}{.no-mobile}
 -----------------------------------------------------------------------
 
+### Parameters
+
+Select the variables you want to see.
+
 ```{r}
-fillCol(sliderInput("alpha", "Transparency", 0, 1, 1), height = 100)
+sliderInput("alpha", "Transparency", 0, 1, 1)
+        
+selectInput("variable", "Variables", c("Race" = "race",
+                                              "Age" = "age",
+                                              "Gender" = "gender"),
+            selected = "race", multiple = TRUE)
+
+radioButtons("year", "Year", c(2012, 2014, 2016), selected = 2016 )
 ```
 
 
-Plot
+Parameters {.mobile}
 -----------------------------------------------------------------------
-### Plot
+
+Select the variables you want to see.
 
 ```{r}
-fillCol(plotOutput("diamonds"))
+sliderInput("alpha", "Transparency", 0, 1, 1)
+        
+selectInput("variable", "Variables", c("Race" = "race",
+                                              "Age" = "age",
+                                              "Gender" = "gender"),
+            selected = "race", multiple = TRUE)
+
+radioButtons("year", "Year", c(2012, 2014, 2016), selected = 2016 )
+```
+
+
+Main
+-----------------------------------------------------------------------
+### Visualizations
+
+```{r}
+
 
 temp <- sample_n(diamonds, 10000)
-output$diamonds <- renderPlot({ggplot(temp, aes(carat, price)) +
+renderPlot({ggplot(temp, aes(carat, price)) +
   geom_point(alpha = input$alpha) +
   theme_minimal()})
 ```
