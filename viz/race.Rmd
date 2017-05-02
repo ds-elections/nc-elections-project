@@ -94,7 +94,7 @@ cces_2012_viz <- sample_n(cces_2012, size = nrow(cces_2012),
 
 cces_2012_viz <- cces_2012_viz %>%
   mutate(source = "cces2012") %>%
-  select(race, source)
+  select(race, source, voted)
 
 #2014
 cces_2014$race <- as.character(cces_2014$race)
@@ -109,7 +109,8 @@ cces_2014_viz <- sample_n(cces_2014, size = nrow(cces_2014),
 
 cces_2014_viz <- cces_2014_viz %>%
   mutate(source = "cces2014") %>%
-  select(race, source)
+  select(race, source, voted)
+
 #2016
 cces_2016$race <- as.character(cces_2016$race)
 cces_2016 <- cces_2016 %>%
@@ -122,7 +123,7 @@ cces_2016_viz <- sample_n(cces_2016, size = nrow(cces_2016),
 
 cces_2016_viz <- cces_2016_viz %>%
   mutate(source = "cces2016") %>%
-  select(race, source)
+  select(race, source, voted)
 rm(list = c("cces_2012", "cces_2014", "cces_2016"))
 ```
 
@@ -170,6 +171,8 @@ full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz,
                    cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016)
 #optional removal of all data except full data
 #rm(c("cces_2012_viz", "cces_2014_viz", "cces_2016_viz", "cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014", "nc_race_2016"))
+
+#to plot actual voting pop, filter(voted = "Voted")
 
 to_plot_2012 <- full_data %>%
   group_by(source) %>%
