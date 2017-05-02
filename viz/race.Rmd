@@ -62,6 +62,10 @@ cps$RACE <- fct_recode(cps$RACE, `Native American` =  "American Indian/Aleut/Esk
                        Mixed = "White-Black",
                        Mixed = "White-Black-American Indian")
 
+cps$VOTEREG <- fct_other(cps$VOTEREG, keep = "Voted", other_level = "Registered Only")
+
+cps <- rename(cps, voted = VOTEREG)
+
 cps_2012 <- filter(cps, YEAR == 2012)
 cps_2014 <- filter(cps, YEAR == 2014)
 
@@ -70,11 +74,11 @@ cps_2014_viz <- sample_n(cps, size = nrow(cps_2014), weight = WTFINL, replace = 
 
 cps_2012_viz <- cps_2012_viz %>%
   mutate(source = "cps2012", race = RACE) %>%
-  select(race, source)
+  select(race, source, voted)
 
 cps_2014_viz <- cps_2014_viz %>%
   mutate(source = "cps2014", race = RACE) %>%
-  select(race, source)
+  select(race, source, voted)
 rm(list = c("cps", "cps_2012", "cps_2014"))
 ```
 
@@ -91,6 +95,7 @@ cces_2012_viz <- sample_n(cces_2012, size = nrow(cces_2012),
 cces_2012_viz <- cces_2012_viz %>%
   mutate(source = "cces2012") %>%
   select(race, source)
+
 #2014
 cces_2014$race <- as.character(cces_2014$race)
 cces_2014 <- cces_2014 %>%
