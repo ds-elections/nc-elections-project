@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load_packages}
 library(tidyverse)
+library(forcats)
 ```
 
 ```{r, import_data}
@@ -47,6 +48,8 @@ cces_2014 <- cces_2014 %>%
          votereg_post, CC401) %>%
   filter(inputstate == "North Carolina", votereg == "Yes") %>%
   rename(voted = CC401)
+
+cces_2014$voted <- fct_recode(cces_2014$voted, Voted = "I definitely voted in the Midterm Election on November 4th.")
 ```
 
 ```{r, tidy_2016}
@@ -57,5 +60,7 @@ cces_2016 <- cces_2016 %>%
          CC16_401) %>%
   filter(inputstate == "North Carolina", votereg == "Yes") %>%
   rename(voted = CC16_401)
+
+cces_2016$voted <- fct_recode(cces_2016$voted, Voted = "I definitely voted in the General Election.")
 ```
 
