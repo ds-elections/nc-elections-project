@@ -30,7 +30,8 @@ rm(x)
 
 ```{r, tidy_2012}
 cces_2012 <- cces_2012 %>%
-  select(1:4, 6:15, faminc, CC316, CC317) %>%
+  select(1:4, 6:15, faminc, CC316, CC317,
+         votereg_post, CC401) %>%
   filter(inputstate == "North Carolina", votereg == "Yes")
 ```
 
@@ -39,7 +40,8 @@ cces_2014 <- cces_2014 %>%
   select(1:6, birthyr, gender, 
          educ, race, hispanic, 
          votereg, votereg_f, inputstate, 
-         faminc, CC14_316, CC14_317) %>%
+         faminc, CC14_316, CC14_317,
+         votereg_post, CC401) %>%
   filter(inputstate == "North Carolina", votereg == "Yes")
 ```
 
@@ -47,7 +49,8 @@ cces_2014 <- cces_2014 %>%
 cces_2016 <- cces_2016 %>%
   select(1:10, votereg, votereg_f,
          regzip, inputzip,birthyr,
-         gender, race, hispanic) %>%
+         gender, race, hispanic,
+         CC16_401) %>%
   filter(inputstate == "North Carolina", votereg == "Yes")
 ```
 
