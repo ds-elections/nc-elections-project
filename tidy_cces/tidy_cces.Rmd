@@ -32,7 +32,10 @@ rm(x)
 cces_2012 <- cces_2012 %>%
   select(1:4, 6:15, faminc, CC316, CC317,
          votereg_post, CC401) %>%
-  filter(inputstate == "North Carolina", votereg == "Yes")
+  filter(inputstate == "North Carolina", votereg == "Yes") %>%
+  rename(voted = CC401)
+cces_2012$voted <- as.factor(cces_2012$voted)
+cces_2012$voted <- fct_recode(cces_2012$voted, Voted = "I definitely voted in the General Election on November 6.")
 ```
 
 ```{r, tidy_2014}
@@ -42,7 +45,8 @@ cces_2014 <- cces_2014 %>%
          votereg, votereg_f, inputstate, 
          faminc, CC14_316, CC14_317,
          votereg_post, CC401) %>%
-  filter(inputstate == "North Carolina", votereg == "Yes")
+  filter(inputstate == "North Carolina", votereg == "Yes") %>%
+  rename(voted = CC401)
 ```
 
 ```{r, tidy_2016}
@@ -51,6 +55,7 @@ cces_2016 <- cces_2016 %>%
          regzip, inputzip,birthyr,
          gender, race, hispanic,
          CC16_401) %>%
-  filter(inputstate == "North Carolina", votereg == "Yes")
+  filter(inputstate == "North Carolina", votereg == "Yes") %>%
+  rename(voted = CC16_401)
 ```
 
