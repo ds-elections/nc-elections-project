@@ -248,3 +248,4 @@ ggplot(to_plot_2016, aes(x = race, y = prop, fill = source)) +
             position = position_dodge(0.9),
             size = 3)
 ```
+
