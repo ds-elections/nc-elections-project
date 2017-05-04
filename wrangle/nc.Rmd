@@ -9,9 +9,9 @@ library(tidyverse)
 library(lubridate)
 ```
 
-Each case in the original voter history file `nc_vhis` was a voter, given by `voter_reg_num`, in a particular election, given by `election_desc`. The file did not appear to account for eligible voters who did not vote, though it was a factor in `vote_method` that fewer than 30 people shared across all elections. We selected several variables and, using `filter()`, elections in 2012, 2014, and 2016.
+Each case in the original voter history file `nc_vhis` was a voter, given by `voter_reg_num`, in a particular election, given by `election_desc`. The file did not appear to account for eligible voters who did not vote, though it was a factor in `voting_method` that fewer than 30 people shared across all elections. We selected several variables and, using `filter()`, elections in 2012, 2014, and 2016.
 
-Within a given election, there were duplicate rows and different people with the same `voter_reg_num`. To establish a unique identifier `new_id` for each person, we concatenated `voter_reg_num` and `ncid`. After joining the history file `nc_vhis` with the voter file `nc_voter` by `new_id`, we adjusted the ages (given in `nc_voter`) to reflect the age of a voter in a particular election. We call the joined file `nc`.
+Within a given election, there were duplicate rows and different people with the same `voter_reg_num`. To establish a unique identifier `new_id` for each person, we concatenated `voter_reg_num` and `ncid`. After joining the history file `nc_vhis` with the voter file `nc_voter` by `new_id`, we adjusted the ages (given in `nc_voter`) to reflect the age of a voter in a particular election. We called the joined file `nc`.
 
 ```{r}
 nc_vhis <- read_tsv("../data/nc_voter/ncvhis_Statewide.txt") %>%
