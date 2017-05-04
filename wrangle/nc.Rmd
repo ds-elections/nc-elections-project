@@ -1,0 +1,54 @@
+---
+title: "North Carolina Voter Files"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+```
+
+Each case in the original voter history file `nc_vhis` was a voter, given by `voter_reg_num`, in a particular election, given by `election_desc`. The file did not appear to account for eligible voters who did not vote, though it was a factor in `vote_method` that fewer than 30 people shared across all elections. We selected several variables and, using `filter()`, elections in 2012, 2014, and 2016.
+
+Within a given election, there were duplicate rows and different people with the same `voter_reg_num`. To establish a unique identifier `new_id` for each person, we concatenated `voter_reg_num` and `ncid`. After joining the history file `nc_vhis` with the voter file `nc_voter` by `new_id`, we adjusted the ages (given in `nc_voter`) to reflect the age of a voter in a particular election. We call the joined file `nc`.
+
+```{r}
+nc_vhis <- read_tsv("../data/nc_voter/ncvhis_Statewide.txt") %>%
+  select(county_desc:voting_method, voted_party_desc:ncid) %>%
+  mutate(election_lbl = mdy(election_lbl)) %>%
+  filter(year(election_lbl) %in% c(2016, 2014, 2012)) %>%
+  group_by(election_desc) %>%
+  mutate(new_id = paste(voter_reg_num, ncid)) %>%
+  distinct(new_id, .keep_all = TRUE)
+
+nc_voter <- read_tsv("../data/nc_voter/ncvoter_Statewide.txt") %>%
+  filter(status_cd == "A") %>%
+  select(county_desc:voter_reg_num,
+         zip_code,
+         race_code:birth_age,
+         registr_dt:precinct_desc,
+         ncid) %>%
+  mutate(new_id = paste(voter_reg_num, ncid)) %>%
+  distinct(new_id, .keep_all = TRUE)
+
+nc <- nc_vhis %>%
+  left_join(nc_voter, by = c("new_id" = "new_id")) %>%
+  select(county_desc.x,
+         election_lbl:pct_description,
+         new_id,
+         zip_code:registr_dt) %>%
+  rename(county = county_desc.x,
+         party_code = party_cd,
+         age = birth_age)
+
+rm(nc_vhis, nc_voter)
+
+get_age <- function(year, age2016) {
+  return(age2016 - 2016 + year)
+}
+
+nc <- nc %>%
+  mutate(age = get_age(year(election_lbl), age))
+```
+
