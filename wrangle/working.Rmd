@@ -9,7 +9,6 @@ library(tidyverse)
 library(lubridate)
 library(forcats)
 library(knitr)
-library(GGally)
 ```
 
 ### NC voter files
@@ -43,14 +42,14 @@ nc <- nc_vhis %>%
          party_code = party_cd,
          age = birth_age)
 
+rm(nc_vhis, nc_voter)
+
 get_age <- function(year, age2016) {
   return(age2016 - 2016 + year)
 }
 
 nc <- nc %>%
   mutate(age = get_age(year(election_lbl), age))
-
-rm(nc_vhis, nc_voter)
 
 nc_2012_ge <- nc %>%
   filter(election_desc == "11/06/2012 GENERAL", age < 100)
@@ -202,44 +201,74 @@ cces_2014_sample_ge %>%
   geom_line(aes(color = "CCES"), stat = "density") +
   geom_line(data = cps_2012_sample_ge, aes(x = AGE, color = "CPS"), stat = "density") +
   geom_line(data = nc_2012_ge, aes(x = age, color = "VOTER"), stat = "density") +
+  geom_vline(aes(xintercept = median(nc_2012_ge$age), color = "VOTER"), alpha = 0.5) +
+  geom_vline(aes(xintercept = median(cps_2012_sample_ge$AGE), color = "CPS"), alpha = 0.5) +
+  geom_vline(aes(xintercept = median(cces_2014_sample_ge$age), color = "CCES"), alpha = 0.5) +
   scale_color_manual(name = "Data", values = lcolors) +
-  labs(title = "2012 General Election: NC voter age distributions reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
+  labs(title = "2012 General Election: NC voter age distributions, \n reported by the CCES, CPS, and voter file", x = "Age", y = "Density") +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 #### 2012, 2014, 2016: NC Registered Voter Age Distributions By Gender
 
 ```{r}
-nc_2012 %>%
+nc_2012_gen <- nc_2012 %>%
   filter(gender_code %in% c("M", "F")) %>%
-  distinct(new_id, .keep_all = TRUE) %>%
+  distinct(new_id, .keep_all = TRUE)
+
+rm(nc_2012)
+
+nc_2014_gen <- nc_2014 %>%
+  filter(gender_code %in% c("M", "F")) %>%
+  distinct(new_id, .keep_all = TRUE)
+
+rm(nc_2014)
+
+nc_2016_gen <- nc_2016 %>%
+  filter(gender_code %in% c("M", "F")) %>%
+  distinct(new_id, .keep_all = TRUE)
+
+rm(nc_2016)
+```
+
+
+```{r}
+nc_2012_gen %>%
   ggplot(aes(x = age)) +
   geom_line(aes(color = "VOTER", linetype = gender_code), stat = "density") +
   geom_line(data = cps_2012_sample, aes(x = AGE, color = "CPS", linetype = SEX), stat = "density") +
   geom_line(data = cces_2012_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
+  geom_vline(aes(xintercept = median(nc_2012_gen$age), color = "VOTER"), alpha = 0.5) +
+  geom_vline(aes(xintercept = median(cps_2012_sample$AGE), color = "CPS"), alpha = 0.5) +
+  geom_vline(aes(xintercept = median(cces_2012_sample$age), color = "CCES"), alpha = 0.5) +
   scale_color_manual(name = "Data", values = lcolors) +
   scale_linetype_manual(name = "Gender", values = ltypes) +
-  labs(title = "2012 NC voter age distributions by gender, reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
+  labs(title = "2012 NC voter age distributions by gender, \n reported by the CCES, CPS, and voter file", x = "Age", y = "Density") +
+  theme(plot.title = element_text(hjust = 0.5))
 
-nc_2014 %>%
-  filter(gender_code %in% c("M", "F")) %>%
-  distinct(new_id, .keep_all = TRUE) %>%
+nc_2014_gen %>%
   ggplot(aes(x = age)) +
   geom_line(aes(color = "VOTER", linetype = gender_code), stat = "density") +
   geom_line(data = cps_2014_sample, aes(x = AGE, color = "CPS", linetype = SEX), stat = "density") +
   geom_line(data = cces_2014_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
+  geom_vline(aes(xintercept = median(nc_2014_gen$age), color = "VOTER"), alpha = 0.5) +
+  geom_vline(aes(xintercept = median(cps_2014_sample$AGE), color = "CPS"), alpha = 0.5) +
+  geom_vline(aes(xintercept = median(cces_2014_sample$age), color = "CCES"), alpha = 0.5) +
   scale_color_manual(name = "Data", values = lcolors) +
   scale_linetype_manual(name = "Gender", values = ltypes) +
-  labs(title = "2014 NC voter age distributions by gender, reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
+  labs(title = "2014 NC voter age distributions by gender, \n reported by the CCES, CPS, and voter file", x = "Age", y = "Density") +
+  theme(plot.title = element_text(hjust = 0.5))
 
-nc_2016 %>%
-  filter(gender_code %in% c("M", "F")) %>%
-  distinct(new_id, .keep_all = TRUE) %>%
+nc_2016_gen %>%
   ggplot(aes(x = age)) +
   geom_line(aes(color = "VOTER", linetype = gender_code), stat = "density") +
   geom_line(data = cces_2016_sample, aes(x = age, color = "CCES", linetype = gender), stat = "density") +
+  geom_vline(aes(xintercept = median(nc_2014_gen$age), color = "VOTER"), alpha = 0.5) +
+  geom_vline(aes(xintercept = median(cces_2014_sample$age), color = "CCES"), alpha = 0.5) +
   scale_color_manual(name = "Data", values = lcolors) +
   scale_linetype_manual(name = "Gender", values = ltypes) +
-  labs(title = "2016 NC voter age distributions by gender, reported by the CCES, CPS, and voter file", x = "Age", y = "Density")
+  labs(title = "2016 NC voter age distributions by gender, \n reported by the CCES and voter file", x = "Age", y = "Density") +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
