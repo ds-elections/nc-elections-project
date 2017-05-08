@@ -19,6 +19,7 @@ library(forcats)
 if(!dir.exists("~/nc-elections-project/viz/temp")) dir.create("~/nc-elections-project/viz/temp")
 purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
 purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
+
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
@@ -133,12 +134,19 @@ nc_race <- nc %>%
          race_code != "U",
          !is.na(ethnic_code),
                 age < 122) %>%
-  select(race_code, ethnic_code, age, registr_dt) %>%
+  select(race_code, ethnic_code, age, registr_dt, new_id) %>%
   collect(n = Inf)
 
 nc_race <- nc_race %>%
   mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
-                        false = race_code, missing = race_code))
+                        false = race_code, missing = race_code)) %>%
+  mutate(voted = if_else(election_lbl == "2012elect", true = "Voted2012",
+                         false = election_lbl, missing = "null")) %>%
+  mutate(voted = if_else(election_lbl == "2014elect", true = "Voted2014",
+                         false = voted, missing = voted)) %>%
+  mutate(voted = if_else(election_lbl == "2016elect", true = "Voted2016",
+                         false = voted, missing = voted))
+
 #16 cases where race is a space
 nc_race <- filter(nc_race, race_code != " ")
 nc_race$race_code <- fct_recode(nc_race$race_code,
@@ -151,17 +159,17 @@ nc_race$race_code <- fct_recode(nc_race$race_code,
 nc_race_2012 <- nc_race %>%
   filter(registr_dt <= as.Date("2012-10-16")) %>%
   mutate(race = race_code, source = "nc2012") %>%
-  select(race, source)
+  select(race, source, voted)
 
 nc_race_2014 <- nc_race %>%
   filter(registr_dt <= as.Date("2014-10-13")) %>%
   mutate(race = race_code, source = "nc2014") %>%
-  select(race, source)
+  select(race, source, voted)
 
 nc_race_2016 <- nc_race %>%
   filter(registr_dt <= as.Date("2016-10-18")) %>%
   mutate(race = race_code, source = "nc2016") %>%
-  select(race, source)
+  select(race, source, voted)
 #optional remove nc_race file
 #rm(nc_race)
 ```
