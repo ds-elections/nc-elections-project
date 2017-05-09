@@ -19,6 +19,7 @@ library(forcats)
 if(!dir.exists("~/nc-elections-project/viz/temp")) dir.create("~/nc-elections-project/viz/temp")
 purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
 purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
+
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
@@ -133,12 +134,19 @@ nc_race <- nc %>%
          race_code != "U",
          !is.na(ethnic_code),
                 age < 122) %>%
-  select(race_code, ethnic_code, age, registr_dt) %>%
+  select(race_code, ethnic_code, age, registr_dt, new_id) %>%
   collect(n = Inf)
 
 nc_race <- nc_race %>%
   mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
-                        false = race_code, missing = race_code))
+                        false = race_code, missing = race_code)) %>%
+  mutate(voted = if_else(election_lbl == "2012elect", true = "Voted2012",
+                         false = election_lbl, missing = "null")) %>%
+  mutate(voted = if_else(election_lbl == "2014elect", true = "Voted2014",
+                         false = voted, missing = voted)) %>%
+  mutate(voted = if_else(election_lbl == "2016elect", true = "Voted2016",
+                         false = voted, missing = voted))
+
 #16 cases where race is a space
 nc_race <- filter(nc_race, race_code != " ")
 nc_race$race_code <- fct_recode(nc_race$race_code,
@@ -148,31 +156,48 @@ nc_race$race_code <- fct_recode(nc_race$race_code,
                                 Mixed = "M",
                                 Other = "O",
                                 White = "W")
+
+#make standardized dataframe for registerd voters in diffeent years
 nc_race_2012 <- nc_race %>%
   filter(registr_dt <= as.Date("2012-10-16")) %>%
   mutate(race = race_code, source = "nc2012") %>%
-  select(race, source)
+  select(race, source, voted)
 
 nc_race_2014 <- nc_race %>%
   filter(registr_dt <= as.Date("2014-10-13")) %>%
   mutate(race = race_code, source = "nc2014") %>%
-  select(race, source)
+  select(race, source, voted)
 
 nc_race_2016 <- nc_race %>%
   filter(registr_dt <= as.Date("2016-10-18")) %>%
   mutate(race = race_code, source = "nc2016") %>%
-  select(race, source)
+  select(race, source, voted)
+
+#make stadardized dataframe for voters in specific elections
+nc_race_2012_vot <- nc_race %>%
+  filter(voted = "Voted2012") %>%
+  mutate(race = race_code, source = "nc2012vot") %>%
+  select(race, source, voted)
+
+nc_race_2014_vot <- nc_race %>%
+  filter(voted = "Voted2014") %>%
+  mutate(race = race_code, source = "nc2014vot") %>%
+  select(race, source, voted)
+
+nc_race_2016_vot <- nc_race %>%
+  filter(voted = "Voted2016") %>%
+  mutate(race = race_code, source = "nc2016vot") %>%
+  select(race, source, voted)
 #optional remove nc_race file
 #rm(nc_race)
 ```
 
-```{r, 2012 viz}
+```{r, 2012 registered viz}
 full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz, 
-                   cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016)
+                   cps_2014_viz, nc_race_2012, nc_race_2014, nc_race_2016,
+                   nc_race_2012_vot, nc_race_2014_vot, nc_race_2016_vot)
 #optional removal of all data except full data
-#rm(c("cces_2012_viz", "cces_2014_viz", "cces_2016_viz", "cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014", "nc_race_2016"))
-
-#to plot actual voting pop, filter(voted = "Voted")
+#rm(c("cces_2012_viz", "cces_2014_viz", "cces_2016_viz", "cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014", "nc_race_2016", nc_race_2012_vot, nc_race_2014_vot, nc_race_2016_vot))
 
 to_plot_2012 <- full_data %>%
   group_by(source) %>%
@@ -201,7 +226,7 @@ ggplot(to_plot_2012, aes(x = race, y = prop, fill = source)) +
             size = 2.5)
 ```
 
-```{r, 2014}
+```{r, 2014 registered}
 to_plot_2014 <- full_data %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
@@ -229,7 +254,7 @@ ggplot(to_plot_2014, aes(x = race, y = prop, fill = source)) +
             size = 2.5)
 ```
 
-```{r, 2016}
+```{r, 2016 registered}
 to_plot_2016 <- full_data %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
@@ -257,3 +282,86 @@ ggplot(to_plot_2016, aes(x = race, y = prop, fill = source)) +
             size = 3)
 ```
 
+```{r, 2012 voting viz}
+to_plot_2012vot <- full_data %>%
+  group_by(source) %>%
+  summarise(n = n()) %>% 
+  right_join(full_data, by = "source") %>%
+  filter(source %in% c("cces2012", "cps2012", "nc2012vot")) %>%
+  group_by(source, race) %>% 
+  summarise(prop = n()/median(n))
+
+ggplot(to_plot_2012vot, aes(x = source, y = prop, fill = race)) +
+  geom_col(position = "dodge")
+#zoom
+ggplot(to_plot_2012vot, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge") +
+ coord_cartesian(ylim = c(0,.25)) +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
+#extra
+ggplot(to_plot_2012vot, aes(x = race, y = prop, fill = source)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
+```
+
+```{r, 2014 voting}
+to_plot_2014vot <- full_data %>%
+  group_by(source) %>%
+  summarise(n = n()) %>% 
+  right_join(full_data, by = "source") %>%
+  filter(source %in% c("cces2014", "cps2014", "nc2014vot")) %>%
+  group_by(source, race) %>% 
+  summarise(prop = n()/median(n))
+
+ggplot(to_plot_2014vot, aes(x = source, y = prop, fill = race)) +
+  geom_col(position = "dodge")
+#zoom
+ggplot(to_plot_2014vot, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge") +
+ coord_cartesian(ylim = c(0,.25)) +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
+#extra
+ggplot(to_plot_2014vot, aes(x = race, y = prop, fill = source)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 2.5)
+```
+
+```{r, 2016 voting}
+to_plot_2016vot <- full_data %>%
+  group_by(source) %>%
+  summarise(n = n()) %>% 
+  right_join(full_data, by = "source") %>%
+  filter(source %in% c("cces2016", "nc2016vot")) %>%
+  group_by(source, race) %>% 
+  summarise(prop = n()/median(n))
+
+ggplot(to_plot_2016vot, aes(x = source, y = prop, fill = race)) +
+  geom_col(position = "dodge")
+#zoom
+ggplot(to_plot_2016vot, aes(source, prop, fill = race)) +
+  geom_col(position = "dodge") +
+ coord_cartesian(ylim = c(0,.25)) +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 3)
+#extra
+ggplot(to_plot_2016vot, aes(x = race, y = prop, fill = source)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = round(prop, digits = 3)), 
+            vjust = -.05,
+            position = position_dodge(0.9),
+            size = 3)
+```
