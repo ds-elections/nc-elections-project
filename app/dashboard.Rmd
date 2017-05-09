@@ -1,11 +1,15 @@
 ---
-title: "North Carolina voter demographics"
+title: "North Carolina Voter Demographics"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
+    orientation: rows
+    horizontal_layout: fill
     theme: yeti
+    navbar:
+    - {icon: "ion-social-github", href: "https://github.com/ds-elections/nc-elections-project", align: right}
 runtime: shiny
+bibliography: bibliography.bib
+csl: chicago.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -14,70 +18,115 @@ library(tidyverse)
 library(shiny)
 ```
 
-Overview
+Introduction
 =======================================================================
 
-### Project Overview
+### Motivation
 
-This is what our project is about.
+- What is our question?
+  - Difference between surveys and voter file?
+- Why is this interesting to *us*?
+- Why is it interesting to anyone else?
 
-Data
+### Data sources
+
+- How did we find our data?
+  - Don't forget citations
+- What did we do to it?
+  - Challenges?
+- Other data sources?
+- What data do we wish we had?
+
+The largest data source used in this project is the North Carolina voter file.
+These data are publicly available from the [North Carolina State Board of Elections](http://dl.ncsbe.gov/index.html).
+They consist of two files: the first is a voter history file, containing a record of ballots cast, and the second is a voter registration file, which contains demographic information about voters.
+We also made use of the [Cooperative Congresional Election Study (CCES)](http://cces.gov.harvard.edu/)
+[@cces_2012, @cces_2014, @cces_2016].
+These data are the result of a large national survey about voting behaviors.
+
+The most difficult data to work with were the North Carolina files, mostly because of their size.
+Together, the two files totaled more that 7 Gb. This is fairly small by modern data standards,
+but still present problems for working locally in `R`. We worked around this by using Amazon Web Service's relational database product, RDS, to create a remote PosgreSQL instance that housed the data.
+This allowed us to work remotely even using computers that were not able to load the data locally.
+The code we used to download the data and create the tables is available in the GitHub repo for this project.
+
+
+
+Results
 =======================================================================
 
-### Data wrangling
+### Age
 
-This is what our data looked like and what we did to it
+Pick one plot about age and give an interpretation
+
+### Race
+
+Ditto for race
+
+### Gender
+
+Same for gender
 
 Charts
 =======================================================================
 
-Parameters {.sidebar}{.no-mobile}
+Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
 ### Parameters
 
-Select the variables you want to see.
+Select a subset of the population:
 
 ```{r}
-sliderInput("alpha", "Transparency", 0, 1, 1)
-        
-selectInput("variable", "Variables", c("Race" = "race",
-                                              "Age" = "age",
-                                              "Gender" = "gender"),
-            selected = "race", multiple = TRUE)
+selectInput("race", "Race/Ethnicity", c("Black" = "Black",
+                                        "Hispanic" = "Hispanic",
+                                        "White" = "White",
+                                        "Other" = "Other"),
+            multiple = TRUE,
+            selected = c("Black", "Hispanic", "White", "Other"))
 
-radioButtons("year", "Year", c(2012, 2014, 2016), selected = 2016 )
+selectInput("gender", "Gender", c("Male" = "Male",
+                                  "Female" = "Female"),
+            multiple = TRUE, selected = c("Male", "Female"))
+
+sliderInput("age", "Age", 18, 100, c(18,100), step = 1, ticks = FALSE)
+
+radioButtons("year", "Year", c(2012, 2014, 2016), selected = 2016)
 ```
 
 
-Parameters {.mobile}
------------------------------------------------------------------------
-
-Select the variables you want to see.
-
-```{r}
-sliderInput("alpha", "Transparency", 0, 1, 1)
-        
-selectInput("variable", "Variables", c("Race" = "race",
-                                              "Age" = "age",
-                                              "Gender" = "gender"),
-            selected = "race", multiple = TRUE)
-
-radioButtons("year", "Year", c(2012, 2014, 2016), selected = 2016 )
-```
-
-
-Main
+Main {.tabset}
 -----------------------------------------------------------------------
 ### Visualizations
 
 ```{r}
-
-
-temp <- sample_n(diamonds, 10000)
-renderPlot({ggplot(temp, aes(carat, price)) +
-  geom_point(alpha = input$alpha) +
-  theme_minimal()})
+load("data/wrangled.RData")
 ```
 
+```{r}
+to_plot <- reactive({
+  dat <- switch(input$year,
+         `2012` = all_2012,
+         `2014` = all_2014,
+         `2016` = all_2016) %>%
+    filter(age >= input$age[1], age <= input$age[2],
+           race %in% input$race,
+           gender %in% input$gender)
+  
+})
+
+
+renderPlot({
+  ggplot(to_plot(), aes(source)) +
+    geom_bar(aes(fill = voted), position = "fill", na.rm = TRUE) +
+    theme_bw()
+})
+
+```
+
+### Tables
+
+```{r}
+renderDataTable(to_plot())
+```
 
