@@ -33,22 +33,22 @@ nc_voter <- read_tsv("../data/nc_voter/ncvoter_Statewide.txt") %>%
 #          party_code = party_cd,
 #          age = birth_age) %>% 
 #   mutate(registr_dt = mdy(registr_dt)) %>% 
-  mutate(race = recode(race_code,
-                       "B" = "Black",
-                       "W" = "White",
-                       .default = "Other"),
-         race = ifelse(ethnic_code == "HL", "Hispanic", race),
-         gender = recode(gender_code,
-                         "F" = "Female",
-                         "M" = "Male",
-                         "U" = NA_character_),
-         hispanic = recode(ethnic_code,
-                           "HL" = "Yes",
-                           "NL" = "No",
-                           "UN" = NA_character_),
-         registered = "Yes",
-         voted = ifelse(is.na(voting_method), "No", "Yes"),
-         source = "NC")
+  # mutate(race = recode(race_code,
+  #                      "B" = "Black",
+  #                      "W" = "White",
+  #                      .default = "Other"),
+  #        race = ifelse(ethnic_code == "HL", "Hispanic", race),
+  #        gender = recode(gender_code,
+  #                        "F" = "Female",
+  #                        "M" = "Male",
+  #                        "U" = NA_character_),
+  #        hispanic = recode(ethnic_code,
+  #                          "HL" = "Yes",
+  #                          "NL" = "No",
+  #                          "UN" = NA_character_),
+  #        registered = "Yes",
+  #        voted = ifelse(is.na(voting_method), "No", "Yes"),
+  #        source = "NC")
 
 get_age <- function(year, age2016) {
   return(age2016 - 2016 + year)

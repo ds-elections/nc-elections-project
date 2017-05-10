@@ -199,7 +199,7 @@ full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz,
 #rm(c("cces_2012_viz", "cces_2014_viz", "cces_2016_viz", "cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014", "nc_race_2016", nc_race_2012_vot, nc_race_2014_vot, nc_race_2016_vot))
 
 to_plot_2012 <- full_data %>% ungroup() %>%
-  filter(source %in% c("cces2014", "cps2014", "nc2014")) %>%
+  filter(source %in% c("cces2012", "cps2012", "nc2012")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>%
@@ -285,16 +285,19 @@ ggplot(to_plot_2016, aes(x = race, y = prop, fill = source)) +
 ```
 
 ```{r, 2012 voting viz}
-to_plot_2012vot <- full_data %>%
-  filter(source %in% c("cces2012", "cps2012", "nc2012vot"),
-           voted %in% c("Voted", "Voted2012")) %>%
+full_data1 <- full_data %>%
+  filter(source %in% c("cces2012", "cps2012", "nc2012vot")) %>%
+  filter(voted %in% c("Voted", "Voted2012")) %>%
+  mutate(source = if_else(source == "cces2012", "cces2012vot", false = source),
+         source = if_else(source == "cps2012", "cps2012vot", false = source)) 
+  
+to_plot_2012vot <- full_data1 %>%
   group_by(source) %>%
-  summarise(n = n()) %>% 
-  right_join(full_data, by = "source") %>%
+  summarise(n = n()) %>%
+  right_join(full_data1, by = "source") %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n)) %>%
-  filter(source %in% c("cces2012", "cps2012", "nc2012vot"),
-         voted %in% c("Voted", "Voted2012"))
+  filter(source %in% c("cces2012vot", "cps2012vot", "nc2012vot"))
 
 ggplot(to_plot_2012vot, aes(x = source, y = prop, fill = race)) +
   geom_col(position = "dodge")
@@ -316,16 +319,19 @@ ggplot(to_plot_2012vot, aes(x = race, y = prop, fill = source)) +
 ```
 
 ```{r, 2014 voting}
-to_plot_2014vot <- full_data %>%
-  filter(source %in% c("cces2014", "cps2014", "nc2014vot"),
-         voted %in% c("Voted", "Voted2014")) %>%
+full_data2 <- full_data %>%
+  filter(source %in% c("cces2014", "cps2014", "nc2014vot")) %>%
+  filter(voted %in% c("Voted", "Voted2014")) %>%
+  mutate(source = if_else(source == "cces2014", "cces2014vot", false = source),
+         source = if_else(source == "cps2014", "cps2014vot", false = source)) 
+  
+to_plot_2014vot <- full_data2 %>%
   group_by(source) %>%
-  summarise(n = n()) %>% 
-  right_join(full_data, by = "source") %>%
+  summarise(n = n()) %>%
+  right_join(full_data2, by = "source") %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n)) %>%
-  filter(source %in% c("cces2014", "cps2014", "nc2014vot"),
-         voted %in% c("Voted", "Voted2014"))
+  filter(source %in% c("cces2014vot", "cps2014vot", "nc2014vot"))
 
 ggplot(to_plot_2014vot, aes(x = source, y = prop, fill = race)) +
   geom_col(position = "dodge")
@@ -347,16 +353,18 @@ ggplot(to_plot_2014vot, aes(x = race, y = prop, fill = source)) +
 ```
 
 ```{r, 2016 voting}
-to_plot_2016vot <- full_data %>%
-  filter(source %in% c("cces2016", "nc2016vot"),
-         voted %in% c("Voted", "Voted2016")) %>%
+full_data3 <- full_data %>%
+  filter(source %in% c("cces2016", "nc2016vot")) %>%
+  filter(voted %in% c("Voted", "Voted2016")) %>%
+  mutate(source = if_else(source == "cces2016", "cces2016vot", false = source))
+  
+to_plot_2016vot <- full_data3 %>%
   group_by(source) %>%
-  summarise(n = n()) %>% 
-  right_join(full_data, by = "source") %>%
+  summarise(n = n()) %>%
+  right_join(full_data3, by = "source") %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n)) %>%
-  filter(source %in% c("cces2016", "nc2016vot"),
-         voted %in% c("Voted", "Voted2016"))
+  filter(source %in% c("cces2016vot", "nc2016vot"))
 
 ggplot(to_plot_2016vot, aes(x = source, y = prop, fill = race)) +
   geom_col(position = "dodge")

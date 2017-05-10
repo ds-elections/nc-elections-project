@@ -23,28 +23,15 @@ Introduction
 Column
 ----------
 ### Motivation
-What are the demographic discrepancies in age, race, and gender between the registered voters in North Carolina and self-reported registered voter respondents in the CPS and CCES surveys?
-What are the demographic discrepancies in age, race, and gender between the active voters in major elections in North Carolina and self-reported active voters in the CPS and CCES surveys across 2012, 2014 and 2016?
+Our goal is to identify disparities in North Carolina voter demographics (specifically race, age, and gender) among the voter file, Current Population Survey (CPS), and Cooperative Congressional Election Study (CCES).
+
+This is relevant to the field of election science because surveys like the CCES and the CPS are used by researchers to interpret the outcomes of elections. If the registered or voting population differs significantly from that reported by the surveys, this could have wide ranging implications for the validity of interpretations of elections. By comparing these three different data sources, we hope to find empirical evidence of the accuracy of surveys.
+
+This app allows a user to explore these differences through subsetting the data we collected based on different demographic information. We then make several visualizations of the data to show how different groups of the population differ between sources.
 
 Column
 -------------
 ### Data Sources
-- How did we find our data?
-  - Don't forget citations
-- What did we do to it?
-  - Challenges?
-- Other data sources?
-- What data do we wish we had?
-
-North Carolina Voter Registration – This was obtained through _____________ and contains all individual voter demographic information needed such as age, race and gender for all registered voters.
-
-North Carolina Voter History – This was obtained through _________________ and contains records of all ballots cast by an individual voter. This was filtered for major elections such as the 2012 Presidential election and then was used to determine if a voter was considered active or not. This file was merged with the Voter Registration file.
-
-CCES – Short for Cooperative Congressional Election Survey, the CCES seeks to find how Americans view Congress, political elections and electoral experiences. The CCES samples the US population as a whole, however asks about demographic information as well as registration status and if respondents voted in the last election which was used to filter for the samples needed. Data for 2012, 2014 and preliminary results for 2016 were obtained through CCES’ public database.
-
-CPS – The CPS, or Current Population Survey, is conducted by the US Census. In years of major elections, the CPS also surveys voting and registration in the Voting and Registration supplement. Data for 2012, 2014 were obtained through the Census public database.
-
-Blurb about survey weights.
 
 The largest data source used in this project is the North Carolina voter file.
 These data are publicly available from the [North Carolina State Board of Elections](http://dl.ncsbe.gov/index.html).
@@ -58,6 +45,10 @@ but still present problems for working locally in `R`. We worked around this by 
 This allowed us to work remotely even using computers that were not able to load the data locally.
 The code we used to download the data and create the tables is available in the GitHub repo for this project.
 
+The [CPS](https://cps.ipums.org/cps/), or Current Population Survey, is conducted by the US Census. In years of major elections, the CPS also surveys voting and registration in the Voting and Registration supplement. Data for 2012, 2014 were obtained through the Census public database.
+
+The CCES, short for Cooperative Congressional Election Survey, the CCES seeks to find how Americans view Congress, political elections and electoral experiences. The CCES samples the US population as a whole, however asks about demographic information as well as registration status and if respondents voted in the last election which was used to filter for the samples needed. Data for 2012, 2014 and preliminary results for 2016 were obtained through CCES’ public database.
+
 
 
 Results
@@ -67,7 +58,17 @@ Column
 ----------
 ### Age and Gender
 
-Pick one plot about age and give an interpretation
+```{r}
+knitr::include_graphics("img/age_gender_2012.png")
+knitr::include_graphics("img/age_gender_2014.png")
+```
+
+
+The median age^[Vertical lines denote median ages, not separated by gender] in the voter file is consistently higher than the median ages reported by the CPS and CCES.
+
+The CCES consistently over-reports younger voters, especially women in 2012 and 2014, and men in 2016.
+
+The CPS over-reported older female voters in 2012 and younger voters in 2014, under-reporting middle-aged voters in both years.
 
 column {.tabset} 
 -----------
