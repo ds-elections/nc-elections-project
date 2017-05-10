@@ -267,11 +267,14 @@ cces_2016_sample <- cces_2016 %>%
 
 rm(cces_2016)
 
-all_2012 <- bind_rows(nc_2012, cces_2012_sample)
+all_2012 <- bind_rows(nc_2012, cces_2012_sample) %>% 
+  filter(age >= 18)
 
-all_2014 <- bind_rows(nc_2014, cces_2014_sample)
+all_2014 <- bind_rows(nc_2014, cces_2014_sample) %>% 
+  filter(age >= 18)
 
-all_2016 <- bind_rows(nc_2016, cces_2016_sample)
+all_2016 <- bind_rows(nc_2016, cces_2016_sample) %>% 
+  filter(age >= 18)
 
 # rm(cces_2012_sample, cces_2014_sample, cces_2016_sample,
 #    nc_2012, nc_2014, nc_2016)

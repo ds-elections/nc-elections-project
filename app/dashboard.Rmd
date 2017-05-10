@@ -2,14 +2,13 @@
 title: "North Carolina Voter Demographics"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
+    orientation: columns
     horizontal_layout: fill
+    vertical_layout: fill
     theme: yeti
     navbar:
     - {icon: "ion-social-github", href: "https://github.com/ds-elections/nc-elections-project", align: right}
 runtime: shiny
-bibliography: bibliography.bib
-csl: chicago.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -21,15 +20,15 @@ library(shiny)
 Introduction
 =======================================================================
 
+Column
+----------
 ### Motivation
+What are the demographic discrepancies in age, race, and gender between the registered voters in North Carolina and self-reported registered voter respondents in the CPS and CCES surveys?
+What are the demographic discrepancies in age, race, and gender between the active voters in major elections in North Carolina and self-reported active voters in the CPS and CCES surveys across 2012, 2014 and 2016?
 
-- What is our question?
-  - Difference between surveys and voter file?
-- Why is this interesting to *us*?
-- Why is it interesting to anyone else?
-
-### Data sources
-
+Column
+-------------
+### Data Sources
 - How did we find our data?
   - Don't forget citations
 - What did we do to it?
@@ -37,11 +36,20 @@ Introduction
 - Other data sources?
 - What data do we wish we had?
 
+North Carolina Voter Registration – This was obtained through _____________ and contains all individual voter demographic information needed such as age, race and gender for all registered voters.
+
+North Carolina Voter History – This was obtained through _________________ and contains records of all ballots cast by an individual voter. This was filtered for major elections such as the 2012 Presidential election and then was used to determine if a voter was considered active or not. This file was merged with the Voter Registration file.
+
+CCES – Short for Cooperative Congressional Election Survey, the CCES seeks to find how Americans view Congress, political elections and electoral experiences. The CCES samples the US population as a whole, however asks about demographic information as well as registration status and if respondents voted in the last election which was used to filter for the samples needed. Data for 2012, 2014 and preliminary results for 2016 were obtained through CCES’ public database.
+
+CPS – The CPS, or Current Population Survey, is conducted by the US Census. In years of major elections, the CPS also surveys voting and registration in the Voting and Registration supplement. Data for 2012, 2014 were obtained through the Census public database.
+
+Blurb about survey weights.
+
 The largest data source used in this project is the North Carolina voter file.
 These data are publicly available from the [North Carolina State Board of Elections](http://dl.ncsbe.gov/index.html).
 They consist of two files: the first is a voter history file, containing a record of ballots cast, and the second is a voter registration file, which contains demographic information about voters.
-We also made use of the [Cooperative Congresional Election Study (CCES)](http://cces.gov.harvard.edu/)
-[@cces_2012, @cces_2014, @cces_2016].
+We also made use of the [Cooperative Congresional Election Study (CCES)](http://cces.gov.harvard.edu/).
 These data are the result of a large national survey about voting behaviors.
 
 The most difficult data to work with were the North Carolina files, mostly because of their size.
@@ -55,14 +63,20 @@ The code we used to download the data and create the tables is available in the 
 Results
 =======================================================================
 
+Column
+----------
 ### Age
 
 Pick one plot about age and give an interpretation
 
+Column
+-----------
 ### Race
 
 Ditto for race
 
+Column
+------------
 ### Gender
 
 Same for gender
@@ -89,26 +103,30 @@ selectInput("gender", "Gender", c("Male" = "Male",
                                   "Female" = "Female"),
             multiple = TRUE, selected = c("Male", "Female"))
 
-sliderInput("age", "Age", 18, 100, c(18,100), step = 1, ticks = FALSE)
+sliderInput("age", "Age", 18, 120, c(18,120), step = 1, ticks = FALSE)
 
 radioButtons("year", "Year", c(2012, 2014, 2016), selected = 2016)
 ```
 
 
-Main {.tabset}
+Column {data-width=400}
 -----------------------------------------------------------------------
-### Visualizations
+### What percent of the population is voting? {.no-title}
 
 ```{r}
 load("data/wrangled.RData")
+
+get_data <- function(year){
+  switch(year,
+         `2012` = all_2012,
+         `2014` = all_2014,
+         `2016` = all_2016)
+}
 ```
 
 ```{r}
 to_plot <- reactive({
-  dat <- switch(input$year,
-         `2012` = all_2012,
-         `2014` = all_2014,
-         `2016` = all_2016) %>%
+  get_data(input$year) %>%
     filter(age >= input$age[1], age <= input$age[2],
            race %in% input$race,
            gender %in% input$gender)
@@ -124,9 +142,170 @@ renderPlot({
 
 ```
 
-### Tables
+> What percent of the population segment selected voted in the general election
+
+column {.tabset}
+---------
+
+### North Carolina Voter Database
+
+#### Registered
+
 
 ```{r}
-renderDataTable(to_plot())
+renderGauge({
+  nc_tot <- get_data(input$year) %>%
+    filter(source == "NC",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  nc_group_reg <- to_plot() %>% 
+    filter(source == "NC",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  gauge(value = round(nc_group_reg/nc_tot*100),
+        min = 0,
+        max = 100,
+        symbol = "%")
+})
 ```
 
+> Proportion of registered voters in the segment according to the North Carolina voter registration data
+
+#### Voted
+
+```{r}
+renderGauge({
+  nc_tot <- get_data(input$year) %>%
+    filter(source == "NC",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  nc_voted <- to_plot() %>% 
+    filter(source == "NC",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  gauge(value = round(nc_voted/nc_tot*100),
+        min = 0,
+        max = 100,
+        symbol = "%")
+})
+```
+
+> Percent of ballots cast by members of the selected segment according to the North Carolina voter history file
+
+#### Voting Power Index
+
+```{r}
+renderGauge({
+    nc_tot <- get_data(input$year) %>%
+    filter(source == "NC",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+    
+    nc_tot_voted <- get_data(input$year) %>%
+    filter(source == "NC",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  nc_group_voted <- to_plot() %>% 
+    filter(source == "NC",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+    nc_group_reg <- to_plot() %>% 
+    filter(source == "NC",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  
+  gauge(round((nc_group_voted/nc_tot_voted)/(nc_group_reg/nc_tot), 2),
+        0,
+        10,
+        symbol = " VPI")
+})
+```
+
+> VPI is a measure of importance of a group of voters relative to their size
+
+### CCES Estimates
+
+#### Registered
+
+```{r}
+renderGauge({ 
+  cces_tot <- get_data(input$year) %>% 
+    filter(source == "CCES",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  gauge(value = round(sum(to_plot()$source == "CCES")/cces_tot*100),
+        min = 0,
+        max = 100,
+        symbol = "%")
+})
+```
+
+> Proportion of registered voters in the segment as reported by the CCES
+
+#### Voted
+
+```{r}
+renderGauge({ 
+  cces_tot <- get_data(input$year) %>% 
+    filter(source == "CCES",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  cces_voted <- to_plot() %>% 
+    filter(source == "CCES",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  gauge(value = round(cces_voted/cces_tot*100),
+        min = 0,
+        max = 100,
+        symbol = "%",
+        abbreviate = TRUE)
+})
+```
+
+> Percent of ballots cast by members of the segment as reported by the CCES
+
+#### Voting Power Index
+
+```{r}
+renderGauge({
+  gauge(.5,
+        0,
+        1,
+        symbol = " VPI")
+})
+```
