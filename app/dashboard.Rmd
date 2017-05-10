@@ -65,21 +65,34 @@ Results
 
 Column
 ----------
-### Age
+### Age and Gender
 
 Pick one plot about age and give an interpretation
 
-Column
+column {.tabset} 
 -----------
-### Race
 
-Ditto for race
+### Race in 2012
 
-Column
-------------
-### Gender
+```{r}
+knitr::include_graphics("img/plot2012.png")
+knitr::include_graphics("img/plot2012_voted.png")
+```
 
-Same for gender
+### Race in 2014
+
+```{r}
+knitr::include_graphics("img/plot2014.png")
+knitr::include_graphics("img/plot2014_voted.png")
+```
+
+### Race in 2016
+
+```{r}
+knitr::include_graphics("img/plot2016.png")
+knitr::include_graphics("img/plot2016_voted.png")
+```
+
 
 Charts
 =======================================================================
@@ -242,7 +255,7 @@ renderGauge({
   
   gauge(round((nc_group_voted/nc_tot_voted)/(nc_group_reg/nc_tot), 2),
         0,
-        10,
+        2,
         symbol = " VPI")
 })
 ```
@@ -303,9 +316,39 @@ renderGauge({
 
 ```{r}
 renderGauge({
-  gauge(.5,
+    nc_tot <- get_data(input$year) %>%
+    filter(source == "CCES",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+    
+    nc_tot_voted <- get_data(input$year) %>%
+    filter(source == "CCES",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  nc_group_voted <- to_plot() %>% 
+    filter(source == "CCES",
+           voted == "Yes",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+    nc_group_reg <- to_plot() %>% 
+    filter(source == "CCES",
+           !is.na(race),
+           !is.na(age),
+           !is.na(gender)) %>% 
+    nrow()
+  
+  
+  gauge(round((nc_group_voted/nc_tot_voted)/(nc_group_reg/nc_tot), 2),
         0,
-        1,
+        2,
         symbol = " VPI")
 })
-```

@@ -85,7 +85,8 @@ make_election_tbl <- function(elec_date){
                              "UN" = NA_character_),
            registered = "Yes",
            voted = ifelse(is.na(voting_method), "No", "Yes"),
-           source = "NC")
+           source = "NC") %>% 
+    filter(!is.na(hispanic))
   
   return(nc)
 }
