@@ -227,10 +227,10 @@ ggplot(to_plot_2012, aes(x = race, y = prop, fill = source)) +
 
 ```{r, 2014 registered}
 to_plot_2014 <- full_data %>%
+  filter(source %in% c("cces2014", "cps2014", "nc2014")) %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>%
-  filter(source %in% c("cces2014", "cps2014", "nc2014")) %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
