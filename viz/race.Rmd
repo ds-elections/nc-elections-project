@@ -18,7 +18,7 @@ library(forcats)
 ```{r, load data}
 if(!dir.exists("~/nc-elections-project/viz/temp")) dir.create("~/nc-elections-project/viz/temp")
 purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
-purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
+purl("wrangle/nc.Rmd", output = "viz/temp/nc.R") %>% source()
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
@@ -128,23 +128,23 @@ rm(list = c("cces_2012", "cces_2014", "cces_2016"))
 ```
 
 ```{r, nc}
-nc_race <- nc %>%
+nc_race <- nc %>% ungroup() %>% 
   filter(!is.na(race_code), 
          race_code != "U",
          !is.na(ethnic_code),
                 age < 122) %>%
-  select(race_code, ethnic_code, age, registr_dt, new_id) %>%
+  select(race_code, ethnic_code, age, registr_dt, new_id, election_desc) %>%
   collect(n = Inf)
 
 nc_race <- nc_race %>%
   mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
-                        false = race_code, missing = race_code)) %>%
-  mutate(voted = if_else(election_desc == "11/06/2012 GENERAL", true = "Voted2012",
-                         false = election_lbl, missing = "null")) %>%
-  mutate(voted = if_else(election_desc == "11/04/2014 GENERAL", true = "Voted2014",
-                         false = voted, missing = voted)) %>%
-  mutate(voted = if_else(election_desc == "11/08/2016 GENERAL", true = "Voted2016",
-                         false = voted, missing = voted))
+                        false = as.character(race_code), missing = as.character(race_code))) %>%
+  mutate(voted = ifelse(election_desc == "11/06/2012 GENERAL", "Voted2012",
+                         election_desc)) %>%
+  mutate(voted = ifelse(election_desc == "11/04/2014 GENERAL", "Voted2014",
+                         voted)) %>%
+  mutate(voted = ifelse(election_desc == "11/08/2016 GENERAL", "Voted2016",
+                         voted))
 
 #16 cases where race is a space
 nc_race <- filter(nc_race, race_code != " ")
@@ -158,33 +158,33 @@ nc_race$race_code <- fct_recode(nc_race$race_code,
 
 #make standardized dataframe for registerd voters in diffeent years
 nc_race_2012 <- nc_race %>%
-  filter(registr_dt <= as.Date("2012-10-16")) %>%
+  filter(mdy(registr_dt) <= as.Date("2012-10-16")) %>%
   mutate(race = race_code, source = "nc2012") %>%
   select(race, source, voted)
 
 nc_race_2014 <- nc_race %>%
-  filter(registr_dt <= as.Date("2014-10-13")) %>%
+  filter(mdy(registr_dt) <= as.Date("2014-10-13")) %>%
   mutate(race = race_code, source = "nc2014") %>%
   select(race, source, voted)
 
 nc_race_2016 <- nc_race %>%
-  filter(registr_dt <= as.Date("2016-10-18")) %>%
+  filter(mdy(registr_dt) <= as.Date("2016-10-18")) %>%
   mutate(race = race_code, source = "nc2016") %>%
   select(race, source, voted)
 
 #make stadardized dataframe for voters in specific elections
 nc_race_2012_vot <- nc_race %>%
-  filter(voted = "Voted2012") %>%
+  filter(voted == "Voted2012") %>%
   mutate(race = race_code, source = "nc2012vot") %>%
   select(race, source, voted)
 
 nc_race_2014_vot <- nc_race %>%
-  filter(voted = "Voted2014") %>%
+  filter(voted == "Voted2014") %>%
   mutate(race = race_code, source = "nc2014vot") %>%
   select(race, source, voted)
 
 nc_race_2016_vot <- nc_race %>%
-  filter(voted = "Voted2016") %>%
+  filter(voted == "Voted2016") %>%
   mutate(race = race_code, source = "nc2016vot") %>%
   select(race, source, voted)
 #optional remove nc_race file
@@ -198,7 +198,7 @@ full_data <- rbind(cces_2012_viz, cces_2014_viz, cces_2016_viz, cps_2012_viz,
 #optional removal of all data except full data
 #rm(c("cces_2012_viz", "cces_2014_viz", "cces_2016_viz", "cps_2012_viz", "cps_2014_viz", "nc_race_2012", "nc_race_2014", "nc_race_2016", nc_race_2012_vot, nc_race_2014_vot, nc_race_2016_vot))
 
-to_plot_2012 <- full_data %>%
+to_plot_2012 <- full_data %>% ungroup() %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>%
@@ -286,7 +286,8 @@ to_plot_2012vot <- full_data %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>%
-  filter(source %in% c("cces2012", "cps2012", "nc2012vot")) %>%
+  filter(source %in% c("cces2012", "cps2012", "nc2012vot"),
+         voted %in% c("Voted", "Voted2012")) %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
@@ -314,7 +315,8 @@ to_plot_2014vot <- full_data %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>%
-  filter(source %in% c("cces2014", "cps2014", "nc2014vot")) %>%
+  filter(source %in% c("cces2014", "cps2014", "nc2014vot"),
+         voted %in% c("Voted", "Voted2014")) %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
@@ -342,7 +344,8 @@ to_plot_2016vot <- full_data %>%
   group_by(source) %>%
   summarise(n = n()) %>% 
   right_join(full_data, by = "source") %>%
-  filter(source %in% c("cces2016", "nc2016vot")) %>%
+  filter(source %in% c("cces2016", "nc2016vot"),
+         voted %in% c("Voted", "Voted2016")) %>%
   group_by(source, race) %>% 
   summarise(prop = n()/median(n))
 
