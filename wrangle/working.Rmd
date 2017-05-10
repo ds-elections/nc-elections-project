@@ -120,7 +120,13 @@ cces_2012 <- read_tsv("../data/cces/CCES12_Common_VV.tab.tsv") %>%
                                `2` = "F")),
          hispanic = as.factor(recode(hispanic,
                                `1` = "Yes",
-                               `0` = "No")))
+                               `0` = "No")),
+         votereg = as.factor(recode(votereg,
+                                    `1` = "Yes",
+                                    `2` = "No",
+                                    `3` = "Don't know",
+                                    `8` = "Skipped",
+                                    `9` = "Not asked")))
   
 cces_2014 <- read_tsv("../data/cces/CCES14_Common_Content_Validated.tab.tsv") %>%
   filter(inputstate == 37) %>% # 37 = North Carolina
@@ -150,7 +156,13 @@ cces_2014 <- read_tsv("../data/cces/CCES14_Common_Content_Validated.tab.tsv") %>
                                `1` = "No",
                                `2` = "I usually vote but did not vote in 2012",
                                `3` = "I am not sure",
-                               `4` = "Yes, I definitely voted")))
+                               `4` = "Yes, I definitely voted")),
+         votereg = as.factor(recode(votereg,
+                                    `1` = "Yes",
+                                    `2` = "No",
+                                    `3` = "Don't know",
+                                    `8` = "Skipped",
+                                    `9` = "Not asked")))
 
 cces_2016 <- read_tsv("../data/cces/CCES2016_Common_FirstRelease.tab.tsv") %>%
   filter(inputstate == 37) %>% # 37 = North Carolina
@@ -163,16 +175,24 @@ cces_2016 <- read_tsv("../data/cces/CCES2016_Common_FirstRelease.tab.tsv") %>%
                                    `1` = "M",
                                    `2` = "F")),
          birthyr = paste(birthyr, "-01-01", sep = ""),
-         age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2016")), "years"))
+         age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2016")), "years"),
+         votereg = as.factor(recode(votereg,
+                                    `1` = "Yes",
+                                    `2` = "No",
+                                    `3` = "Don't know",
+                                    `8` = "Skipped",
+                                    `9` = "Not asked")))
 
 cces_2012_sample <- cces_2012 %>%
-  filter(!is.na(weight_vv_post)) %>%
+  filter(!is.na(weight_vv_post),
+         votereg == "Yes") %>%
   sample_n(size = nrow(cces_2012), replace = TRUE, weight = weight_vv_post)
 
 rm(cces_2012)
 
 cces_2014_sample <- cces_2014 %>%
-  filter(!is.na(weight)) %>%
+  filter(!is.na(weight),
+         votereg == "Yes") %>%
   sample_n(size = nrow(cces_2014), replace = TRUE, weight = weight)
 
 cces_2014_sample_ge <- cces_2014_sample %>%
@@ -182,7 +202,8 @@ cces_2014_sample_ge <- cces_2014_sample %>%
 rm(cces_2014)
 
 cces_2016_sample <- cces_2016 %>%
-  filter(!is.na(commonweight_post)) %>%
+  filter(!is.na(commonweight_post),
+         votereg == "Yes") %>%
   sample_n(size = nrow(cces_2016), replace = TRUE, weight = commonweight_post)
 
 rm(cces_2016)
@@ -214,18 +235,21 @@ cces_2014_sample_ge %>%
 ```{r}
 nc_2012_gen <- nc_2012 %>%
   filter(gender_code %in% c("M", "F")) %>%
+  ungroup() %>%
   distinct(new_id, .keep_all = TRUE)
 
 rm(nc_2012)
 
 nc_2014_gen <- nc_2014 %>%
   filter(gender_code %in% c("M", "F")) %>%
+  ungroup() %>%
   distinct(new_id, .keep_all = TRUE)
 
 rm(nc_2014)
 
 nc_2016_gen <- nc_2016 %>%
   filter(gender_code %in% c("M", "F")) %>%
+  ungroup() %>%
   distinct(new_id, .keep_all = TRUE)
 
 rm(nc_2016)
@@ -269,6 +293,8 @@ nc_2016_gen %>%
   scale_linetype_manual(name = "Gender", values = ltypes) +
   labs(title = "2016 NC voter age distributions by gender, \n reported by the CCES and voter file", x = "Age", y = "Density") +
   theme(plot.title = element_text(hjust = 0.5))
+
+ggsave("nc_2016.png", width = 11, height = 7)
 ```
 
 
