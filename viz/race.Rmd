@@ -19,7 +19,6 @@ library(forcats)
 if(!dir.exists("~/nc-elections-project/viz/temp")) dir.create("~/nc-elections-project/viz/temp")
 purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
 purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
-
 purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
 ```
 
@@ -140,11 +139,11 @@ nc_race <- nc %>%
 nc_race <- nc_race %>%
   mutate(race_code = if_else(ethnic_code == "HL", true = "Hispanic", 
                         false = race_code, missing = race_code)) %>%
-  mutate(voted = if_else(election_lbl == "2012elect", true = "Voted2012",
+  mutate(voted = if_else(election_desc == "11/06/2012 GENERAL", true = "Voted2012",
                          false = election_lbl, missing = "null")) %>%
-  mutate(voted = if_else(election_lbl == "2014elect", true = "Voted2014",
+  mutate(voted = if_else(election_desc == "11/04/2014 GENERAL", true = "Voted2014",
                          false = voted, missing = voted)) %>%
-  mutate(voted = if_else(election_lbl == "2016elect", true = "Voted2016",
+  mutate(voted = if_else(election_desc == "11/08/2016 GENERAL", true = "Voted2016",
                          false = voted, missing = voted))
 
 #16 cases where race is a space
