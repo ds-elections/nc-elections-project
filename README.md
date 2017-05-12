@@ -6,9 +6,13 @@
 - Edwin Alvarado
 - Nick Solomon
 
+## Outcome
+
+Our project resulted in a [`shiny` dashboard](https://nc-elections.shinyapps.io/nc-elections) compiling our findings that allows users to explore the data interactively.
+
 ## Project Description
 
-In this project, we will use the publicly available [North Carolina voter 
+In this project, we will use the publicly available [North Carolina voter
 history and registration files](http://dl.ncsbe.gov/index.html?prefix=data/) to
 create demographic profiles of voters in the 2012, 2014, and 2016 elections.
 Then these profiles will be compared with other measures of the voting
@@ -40,7 +44,3 @@ Presentations
 
 #### Wednesday, May 10
 Project submitted
-
-
-
-
