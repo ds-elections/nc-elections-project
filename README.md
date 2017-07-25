@@ -24,23 +24,32 @@ population.
 
 ## Timeline
 
-#### Wednesday, April 5
+### Wednesday, April 5
 SQL database set up
 
-#### Friday, April 7
+### Friday, April 7
 CPS / CCES / ANES data identified, imported
 
-#### Monday, April 10
+### Monday, April 10
 All data wrangled, tidied
 
-#### Wednesday, April 12
+### Wednesday, April 12
 Initial visualizations made
 
-#### Wednesday, April 19 - Sunday, April 23
+### Wednesday, April 19 - Sunday, April 23
 Work on app started, presentation preparation
 
-#### Wednesday, April 26 - Friday, April 28
+### Wednesday, April 26 - Friday, April 28
 Presentations
 
-#### Wednesday, May 10
+### Wednesday, May 10
 Project submitted
+
+
+#### Editor's Note
+
+This project was way more complex than most, and I wasn't able to access some of the data used. Details about these issues are contained in individual folder READMEs. The shiny dashboard linked to above is static, however, and will run fine.
+
+This repo is organized following the guidelines outlined [here](https://github.com/ds-elections/summer-2017/blob/master/RepoProposal/documents/RepoProposal.md), adapted for use in this class from work by [Project TIER](http://www.projecttier.org/) and [Thomas Leeper](http://thomasleeper.com/2016/11/analysis-as-package/)
+
+— [Jay Lee](https://github.com/jayleetx), Reed College
