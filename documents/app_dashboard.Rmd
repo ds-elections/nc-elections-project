@@ -37,12 +37,12 @@ Column
 The largest data source used in this project is the North Carolina voter file.
 These data are publicly available from the [North Carolina State Board of Elections](http://dl.ncsbe.gov/index.html).
 They consist of two files: the first is a voter history file, containing a record of ballots cast, and the second is a voter registration file, which contains demographic information about voters.
-We also made use of the [Cooperative Congresional Election Study (CCES)](http://cces.gov.harvard.edu/).
+We also made use of the [Cooperative Congressional Election Study (CCES)](http://cces.gov.harvard.edu/).
 These data are the result of a large national survey about voting behaviors.
 
 The most difficult data to work with were the North Carolina files, mostly because of their size.
-Together, the two files totaled more that 7 Gb. This is fairly small by modern data standards,
-but still present problems for working locally in `R`. We worked around this by using Amazon Web Service's relational database product, RDS, to create a remote PosgreSQL instance that housed the data.
+Together, the two files totaled more that 7 GB. This is fairly small by modern data standards,
+but still presents problems for working locally in `R`. We worked around this by using Amazon Web Service's relational database product, RDS, to create a remote PosgreSQL instance that housed the data.
 This allowed us to work remotely even using computers that were not able to load the data locally.
 The code we used to download the data and create the tables is available in the GitHub repo for this project.
 
@@ -50,7 +50,7 @@ The [CPS](https://cps.ipums.org/cps/), or Current Population Survey, is conducte
 
 Survey weights are numeric values assigned to each case in a sample to make it  more representative of the sample. For example, if North Carolina has 30% white female voters yet my sample only had 10% white female a higher survey weight would be assigned to white female voters to better represent them in the sample. However in the methodolgy of assigning the CCES survey weights, the survey weights from the CPS data set were used. This implies that if there were any biasis in the survey weights assigned in the CPS, it could be carried over to the CCES data set. A full methodology of the CCES survey weight methodology can be found in each years guide at [Cooperative Congresional Election Study (CCES)](http://cces.gov.harvard.edu/).
 
-The CCES, short for Cooperative Congressional Election Survey, the CCES seeks to find how Americans view Congress, political elections and electoral experiences. The CCES samples the US population as a whole, however asks about demographic information as well as registration status and if respondents voted in the last election which was used to filter for the samples needed. Data for 2012, 2014 and preliminary results for 2016 were obtained through CCES’ public database.
+The CCES, short for Cooperative Congressional Election Survey, seeks to find how Americans view Congress, political elections and electoral experiences. The CCES samples the US population as a whole, however asks about demographic information as well as registration status and if respondents voted in the last election which was used to filter for the samples needed. Data for 2012, 2014 and preliminary results for 2016 were obtained through CCES’ public database.
 
 
 
