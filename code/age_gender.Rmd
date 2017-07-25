@@ -12,11 +12,10 @@ library(lubridate)
 ```
 
 ```{r, load data}
-# setwd('/Users/alisakwok/Desktop/math241/nc-elections-project')
-if(!dir.exists("viz/temp")) dir.create("viz/temp")
-purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
-purl("wrangle/nc_wrangle.Rmd", output = "viz/temp/nc.R") %>% source()
-purl("tidy_cces/tidy_cces.Rmd", output = "viz/temp/cces.R") %>% source()
+if(!dir.exists("temp")) dir.create("temp")
+purl("../data-raw/wrangle/cps.Rmd", output = "temp/cps.R") %>% source()
+purl("../data-raw/wrangle/nc_cloud.Rmd", output = "temp/nc.R") %>% source()
+purl("../data-raw/wrangle/tidy_cces.Rmd", output = "temp/cces.R") %>% source()
 ```
 
 ```{r}
