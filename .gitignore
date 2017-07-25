@@ -4,5 +4,4 @@
 .Ruserdata
 nc-elections-project.Rproj
 *.pdf
-*.RData
 viz/temp
