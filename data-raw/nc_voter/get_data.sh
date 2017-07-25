@@ -1,5 +1,7 @@
 #!/bin/bash
+# requires wget, 7zip
 
+cd data-raw/nc_voter
 wget https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvhis_Statewide.zip
 wget https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip
 wget https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvhis_ncvoter_data_format.txt

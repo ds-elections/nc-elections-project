@@ -14,7 +14,7 @@ library(knitr)
 ### NC voter files
 
 ```{r}
-nc_vhis <- read_tsv("../data/nc_voter/ncvhis_Statewide.txt") %>%
+nc_vhis <- read_tsv("../nc_voter/ncvhis_Statewide.txt") %>%
   select(county_desc:voting_method, voted_party_desc:ncid) %>%
   mutate(election_lbl = mdy(election_lbl)) %>%
   filter(year(election_lbl) %in% c(2016, 2014, 2012)) %>%
@@ -22,7 +22,7 @@ nc_vhis <- read_tsv("../data/nc_voter/ncvhis_Statewide.txt") %>%
   mutate(new_id = paste(voter_reg_num, ncid)) %>%
   distinct(new_id, .keep_all = TRUE)
 
-nc_voter <- read_tsv("../data/nc_voter/ncvoter_Statewide.txt") %>%
+nc_voter <- read_tsv("../nc_voter/ncvoter_Statewide.txt") %>%
   filter(status_cd == "A") %>%
   select(county_desc:voter_reg_num,
          zip_code,
@@ -69,9 +69,9 @@ rm(nc)
 ### CPS
 
 ```{r}
-setwd("/Users/alisakwok/Desktop/math241/nc-elections-project")
-if(!dir.exists("viz/temp")) dir.create("viz/temp")
-purl("wrangle/cps.Rmd", output = "viz/temp/cps.R") %>% source()
+setwd("../../")
+if(!dir.exists("code/temp")) dir.create("code/temp")
+purl("data-raw/wrangle/cps.Rmd", output = "code/temp/cps.R") %>% source()
 
 set.seed(800)
 
@@ -102,7 +102,8 @@ rm(cps_sample)
 ### CCES
 
 ```{r}
-cces_2012 <- read_tsv("../data/cces/CCES12_Common_VV.tab.tsv") %>%
+setwd("data-raw/wrangle")
+cces_2012 <- read_tsv("../cces/CCES12_Common_VV.tab.tsv") %>%
   filter(inputstate == 37) %>%
   mutate(birthyr = paste(birthyr, "-01-01", sep = ""),
          age = as.numeric(as.duration(ymd(birthyr) %--% mdy("01-01-2012")), "years"),
@@ -128,7 +129,7 @@ cces_2012 <- read_tsv("../data/cces/CCES12_Common_VV.tab.tsv") %>%
                                     `8` = "Skipped",
                                     `9` = "Not asked")))
   
-cces_2014 <- read_tsv("../data/cces/CCES14_Common_Content_Validated.tab.tsv") %>%
+cces_2014 <- read_tsv("../cces/CCES14_Common_Content_Validated.tab.tsv") %>%
   filter(inputstate == 37) %>% # 37 = North Carolina
   select(V101:countyfips,
          birthyr:hispanic,
@@ -164,7 +165,7 @@ cces_2014 <- read_tsv("../data/cces/CCES14_Common_Content_Validated.tab.tsv") %>
                                     `8` = "Skipped",
                                     `9` = "Not asked")))
 
-cces_2016 <- read_tsv("../data/cces/CCES2016_Common_FirstRelease.tab.tsv") %>%
+cces_2016 <- read_tsv("../cces/CCES2016_Common_FirstRelease.tab.tsv") %>%
   filter(inputstate == 37) %>% # 37 = North Carolina
   select(V101:commonweight_post,
          cdid113:countyname,

@@ -14,7 +14,7 @@ Each case in the original voter history file `nc_vhis` was a voter, given by `vo
 Within a given election, there were duplicate rows and different people with the same `voter_reg_num`. To establish a unique identifier `new_id` for each person, we concatenated `voter_reg_num` and `ncid`. After joining the history file `nc_vhis` with the voter file `nc_voter` by `new_id`, we adjusted the ages (given in `nc_voter`) to reflect the age of a voter in a particular election. We called the joined file `nc`.
 
 ```{r}
-nc_vhis <- read_tsv("../data/nc_voter/ncvhis_Statewide.txt") %>%
+nc_vhis <- read_tsv("../nc_voter/ncvhis_Statewide.txt") %>%
   select(county_desc:voting_method, voted_party_desc:ncid) %>%
   mutate(election_lbl = mdy(election_lbl)) %>%
   filter(year(election_lbl) %in% c(2016, 2014, 2012)) %>%
@@ -22,7 +22,7 @@ nc_vhis <- read_tsv("../data/nc_voter/ncvhis_Statewide.txt") %>%
   mutate(new_id = paste(voter_reg_num, ncid)) %>%
   distinct(new_id, .keep_all = TRUE)
 
-nc_voter <- read_tsv("../data/nc_voter/ncvoter_Statewide.txt") %>%
+nc_voter <- read_tsv("../nc_voter/ncvoter_Statewide.txt") %>%
   filter(status_cd == "A") %>%
   select(county_desc:voter_reg_num,
          zip_code,

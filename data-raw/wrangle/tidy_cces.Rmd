@@ -15,15 +15,15 @@ library(forcats)
 ```
 
 ```{r, import_data}
-load("data/cces/CCES12_Common_VV.RData")
+load("../data-raw/cces/CCES12_Common_VV.RData")
 
 cces_2012 <- x
 
-load("data/cces/CCES14_Common_Content_Validated.RData")
+load("../data-raw/cces/CCES14_Common_Content_Validated.RData")
 
 cces_2014 <- x
 
-load("data/cces/CCES2016_Common_FirstRelease.RData")
+load("../data-raw/cces/CCES2016_Common_FirstRelease.RData")
 
 cces_2016 <- x
 rm(x)
@@ -62,5 +62,11 @@ cces_2016 <- cces_2016 %>%
   rename(voted = CC16_401)
 
 cces_2016$voted <- fct_recode(cces_2016$voted, Voted = "I definitely voted in the General Election.")
+```
+
+```{r eval = F}
+save(cces_2012, file = "../../data/cces_2012.Rda")
+save(cces_2014, file = "../../data/cces_2014.Rda")
+save(cces_2016, file = "../../data/cces_2016.Rda")
 ```
 
